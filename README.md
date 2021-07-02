@@ -41,14 +41,14 @@
 
 좋은 예 >
 
-```
+```typescript
   class HandyCandy
 ```
 
 나쁜 예 >
 
-```
-  class handycandy{ }
+```typescript
+class handycandy {}
 ```
 
 **함수 & 변수 & 인스턴스**
@@ -66,14 +66,12 @@
 - 함수끼리 1줄 개행합니다.
 - 중괄호는 아래와 같은 형식으로 사용합니다.
 
-```
+```typescript
 if (condition) {
-
-  Statements
+  Statements;
   /*
   ...
   */
-
 }
 ```
 
@@ -236,7 +234,7 @@ git rebase --continue (다 반영했으면 다음 conflict로 넘어감)
 
 ## 🏹 Dependencies module
 
-```
+```json
 {
   "name": "handycandy",
   "version": "1.0.0",
