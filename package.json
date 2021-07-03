@@ -29,9 +29,15 @@
     "typescript": "^4.3.4"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "mongoose": "^5.12.15"
+    "express-validator": "^6.12.0",
+    "gravatar": "^1.8.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.12.15",
+    "nodemailer": "^6.6.2",
+    "nodemailer-smtp-transport": "^2.7.4"
   },
   "husky": {
     "hooks": {
