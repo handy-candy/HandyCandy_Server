@@ -9,5 +9,10 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['@typescript-eslint'],
-  rules: {},
+  rules: {
+    'no-console': 'off',
+    'no-unused-vars': 1,
+    'import/no-unresolved': 'off',
+    'import/extensions': ['off'],
+  },
 };
