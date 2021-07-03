@@ -31,6 +31,7 @@
   - models
   - jobs
   - services
+  - controllers
 
 ### **🖋 네이밍**
 
