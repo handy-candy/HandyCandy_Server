@@ -1,5 +1,4 @@
 export interface IReview {
-  id: number;
   feeling: number;
   review_image_url: string;
   message: string;
