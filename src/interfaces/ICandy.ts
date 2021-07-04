@@ -1,5 +1,4 @@
 export interface ICandy {
-  id: number;
   name: string;
   shopping_link: string;
   candy_image_url: string;
