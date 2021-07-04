@@ -14,5 +14,6 @@ module.exports = {
     'no-unused-vars': 1,
     'import/no-unresolved': 'off',
     'import/extensions': ['off'],
+    'object-curly-newline': 'off',
   },
 };
