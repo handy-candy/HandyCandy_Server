@@ -1,8 +1,7 @@
-import mongoose from "mongoose";
-import { IReview } from "../interfaces/IReview";
+import mongoose from 'mongoose';
+import { IReview } from '../interfaces/IReview';
 
 const ReviewSchema = new mongoose.Schema({
-  
   id: {
     type: Number,
     required: true,
@@ -14,21 +13,20 @@ const ReviewSchema = new mongoose.Schema({
   },
   review_image_url: {
     type: String,
-  }, 
+  },
   message: {
     type: String,
   },
   candy_id: {
     type: Number,
-    ref: "Candy",
+    ref: 'Candy',
     required: true,
   },
   category_id: {
     type: Number,
-    ref: "Category",
+    ref: 'Category',
     required: true,
-  }, 
-
+  },
 });
 
-export default mongoose.model<IReview & mongoose.Document>("Review", ReviewSchema);
+export default mongoose.model<IReview & mongoose.Document>('Review', ReviewSchema);

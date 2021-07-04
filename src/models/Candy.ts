@@ -1,8 +1,7 @@
-import mongoose from "mongoose";
-import { ICandy } from "../interfaces/ICandy";
+import mongoose from 'mongoose';
+import { ICandy } from '../interfaces/ICandy';
 
 const CandySchema = new mongoose.Schema({
-
   id: {
     type: Number,
     required: true,
@@ -33,19 +32,18 @@ const CandySchema = new mongoose.Schema({
   },
   user_id: {
     type: Number,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   category_id: {
     type: Number,
-    ref: "Category",
+    ref: 'Category',
     required: true,
   },
   created_at: {
     type: Date,
     default: Date.now,
   },
-
 });
 
-export default mongoose.model<ICandy & mongoose.Document>("Candy", CandySchema);
+export default mongoose.model<ICandy & mongoose.Document>('Candy', CandySchema);

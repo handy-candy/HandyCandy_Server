@@ -1,7 +1,6 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export interface ICandy {
- 
   id: number;
   name: string;
   shopping_link: string;
@@ -12,5 +11,4 @@ export interface ICandy {
   user_id: number;
   category_id: number;
   created_at: Date;
-
 }

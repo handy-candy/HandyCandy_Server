@@ -1,13 +1,12 @@
-import mongoose from "mongoose";
-import { IUser } from "../interfaces/IUser";
+import mongoose from 'mongoose';
+import { IUser } from '../interfaces/IUser';
 
 const UserSchema = new mongoose.Schema({
-  
   id: {
     type: Number,
     required: true,
     unique: true,
-  }, 
+  },
   email: {
     type: String,
     required: true,
@@ -44,7 +43,6 @@ const UserSchema = new mongoose.Schema({
   refresh_token: {
     type: String,
   },
-
 });
 
-export default mongoose.model<IUser & mongoose.Document>("User", UserSchema);
+export default mongoose.model<IUser & mongoose.Document>('User', UserSchema);

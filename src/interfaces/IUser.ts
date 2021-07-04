@@ -1,7 +1,6 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export interface IUser {
- 
   id: number;
   email: string;
   password: string;
@@ -13,5 +12,4 @@ export interface IUser {
   notice_agreement: boolean;
   access_token: string;
   refresh_token: string;
-
 }
