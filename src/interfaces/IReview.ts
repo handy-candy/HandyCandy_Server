@@ -1,5 +1,3 @@
-import mongoose from 'mongoose';
-
 export interface IReview {
   id: number;
   feeling: number;

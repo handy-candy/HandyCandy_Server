@@ -1,5 +1,3 @@
-import mongoose from 'mongoose';
-
 export interface ICandy {
   id: number;
   name: string;

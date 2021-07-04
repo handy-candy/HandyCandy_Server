@@ -1,5 +1,3 @@
-import mongoose from 'mongoose';
-
 export interface ICategory {
   id: number;
   name: string;

@@ -1,5 +1,3 @@
-import mongoose from 'mongoose';
-
 export interface IUser {
   id: number;
   email: string;
