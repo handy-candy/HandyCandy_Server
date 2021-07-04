@@ -6,6 +6,7 @@ const UserSchema = new mongoose.Schema({
   id: {
     type: Number,
     required: true,
+    unique: true,
   }, 
   email: {
     type: String,
@@ -27,14 +28,14 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  age: {
+  birth: {
     type: Number,
     required: true,
   },
   personal_info_agreement: {
     type: Boolean,
   },
-  alarm_agreement: {
+  notice_agreement: {
     type: Boolean,
   },
   access_token: {

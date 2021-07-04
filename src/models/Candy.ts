@@ -6,6 +6,7 @@ const CandySchema = new mongoose.Schema({
   id: {
     type: Number,
     required: true,
+    unique: true,
   },
   name: {
     type: String,
@@ -28,7 +29,7 @@ const CandySchema = new mongoose.Schema({
     required: true,
   },
   reward_completed_at: {
-    type: String,
+    type: Date,
   },
   user_id: {
     type: Number,

@@ -6,6 +6,7 @@ const ReviewSchema = new mongoose.Schema({
   id: {
     type: Number,
     required: true,
+    unique: true,
   },
   feeling: {
     type: Number,
