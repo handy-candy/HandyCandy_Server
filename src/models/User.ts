@@ -25,16 +25,10 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  personal_info_agreement: {
-    type: Boolean,
-  },
   notice_agreement: {
     type: Boolean,
   },
   access_token: {
-    type: String,
-  },
-  refresh_token: {
     type: String,
   },
 });
