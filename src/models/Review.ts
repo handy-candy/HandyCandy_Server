@@ -2,11 +2,6 @@ import mongoose from 'mongoose';
 import { IReview } from '../interfaces/IReview';
 
 const ReviewSchema = new mongoose.Schema({
-  id: {
-    type: Number,
-    required: true,
-    unique: true,
-  },
   feeling: {
     type: Number,
     required: true,
@@ -18,12 +13,12 @@ const ReviewSchema = new mongoose.Schema({
     type: String,
   },
   candy_id: {
-    type: Number,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Candy',
     required: true,
   },
   category_id: {
-    type: Number,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
     required: true,
   },
