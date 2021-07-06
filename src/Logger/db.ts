@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import config from "../config";
+import mongoose from 'mongoose';
+import config from '../config';
 
 const connectDB = async () => {
   try {
@@ -9,7 +9,7 @@ const connectDB = async () => {
       useUnifiedTopology: true,
     });
 
-    console.log("Mongoose Connected ...");
+    console.log('Mongoose Connected ...');
   } catch (err) {
     console.error(err.message);
     process.exit(1);

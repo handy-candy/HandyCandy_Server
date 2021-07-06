@@ -4,9 +4,9 @@ import connectDB from './Logger/db';
 const app = express();
 
 // Connect Database
-// connectDB();
-// app.use(express.json());
-
+connectDB();
+app.use(express.json());
+app.use("/api/users", require("./api/Users"));
 // error handler
 app.use((err, req, res, next) => {
   // set locals, only providing error in development
