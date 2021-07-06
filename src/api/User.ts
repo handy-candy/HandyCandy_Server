@@ -9,7 +9,7 @@ const router = express.Router();
 import User from '../models/User';
 
 /**
- *  @route Post api/users
+ *  @route Post api/users/signUp
  *  @desc Register User
  *  @access Public
  */
@@ -71,6 +71,11 @@ router.post(
   },
 );
 
+/**
+ *  @route Post api/users/signIn
+ *  @desc Login User
+ *  @access Public
+ */
 router.post(
   '/signIn',
   [check('email', 'Please include a valid email').isEmail(), check('password', 'Password is required').exists()],
