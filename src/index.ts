@@ -5,7 +5,12 @@ const app = express();
 
 // Connect Database
 connectDB();
+
+app.use(express.urlencoded());
 app.use(express.json());
+
+//Define Routes
+app.use('/userInfo', require('./api/userInfo'));
 
 // error handler
 app.use((err, req, res, next) => {
