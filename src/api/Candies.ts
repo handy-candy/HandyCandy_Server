@@ -1,30 +1,28 @@
 import { Router, Request, Response } from 'express';
 import Candy from '../models/Candy';
 import Category from '../models/Category';
+import auth from '../middleware/auth';
 
 const router = Router();
-const moment = require('moment');
-require('moment-timezone');
-moment.tz.setDefault('Asia/Seoul');
 
 /**
  * @route GET api/candies/commingCandy
  * @desc Get commingCandies by user ID
  */
 
-router.get('/commingCandy', async (req: Request, res: Response) => {
+router.get('/commingCandy', auth, async (req: Request, res: Response) => {
   try {
-    const today = moment().startOf('day');
+    const today = new Date();
     const candies = await Candy.find({
-      user_id: req.headers.user_id,
-      reward_planned_at: { $gte: today.toDate() + 3600000 * 9 },
-      reward_completed_at: { $lt: today.toDate() + 3600000 * 9 },
+      user_id: req.body.user.id,
+      reward_planned_at: { $gte: new Date(today.getFullYear(), today.getMonth(), today.getDate()) },
+      reward_completed_at: { $lt: new Date(today.getFullYear(), today.getMonth(), today.getDate()) },
     });
 
-    var candyArray = [];
+    let candyArray = [];
 
     for (const candy of candies) {
-      var data = { candy_id: candy['_id'], candy_image_url: candy['candy_image_url'], candy_name: candy['name'] };
+      let data = { candy_id: candy['_id'], candy_image_url: candy['candy_image_url'], candy_name: candy['name'] };
       const categoryId = await candy['category_id'];
       const category = await Category.findById(categoryId);
       const plannedDate = candy['reward_planned_at'];
@@ -47,7 +45,6 @@ router.get('/commingCandy', async (req: Request, res: Response) => {
       result: result,
     });
   } catch (err) {
-    console.error(err.message);
     res.status(500).send('Server Error');
   }
 });
