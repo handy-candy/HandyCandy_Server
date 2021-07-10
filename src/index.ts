@@ -5,8 +5,12 @@ const app = express();
 
 // Connect Database
 connectDB();
+
+app.use(express.urlencoded());
 app.use(express.json());
+app.use('/userInfo', require('./api/userInfo'));
 app.use('/api/users', require('./api/user'));
+
 // error handler
 app.use((err, req, res, next) => {
   // set locals, only providing error in development
