@@ -20,8 +20,8 @@ router.get('/commingCandy', auth, async (req: Request, res: Response) => {
     const candies = await Candy.find({
       user_id: req.body.user.id,
       reward_planned_at: { $gte: new Date(today.getFullYear(), today.getMonth(), today.getDate()) },
-      reward_completed_at: { $lt: new Date(today.getFullYear(), today.getMonth(), today.getDate()) },
-    }).sort({ reward_planned_at: 1 });
+      reward_completed_at: { $lte: new Date(1111, 10, 13) },
+    });
 
     let candyArray = [];
 
@@ -30,7 +30,8 @@ router.get('/commingCandy', auth, async (req: Request, res: Response) => {
       const categoryId = await candy['category_id'];
       const category = await Category.findById(categoryId);
       const plannedDate = candy['reward_planned_at'];
-      const dDay = Math.floor(Math.abs(today.getTime() - plannedDate.getTime()) / (1000 * 3600 * 24));
+      const now = new Date();
+      const dDay = plannedDate.getDate() - now.getDate();
 
       data['category_image_url'] = category['category_image_url'];
       data['category_name'] = category['name'];
@@ -59,11 +60,9 @@ router.get('/waitingCandy', auth, async (req: Request, res: Response) => {
     const today = new Date();
     const candies = await Candy.find({
       user_id: req.body.user.id,
-      reward_planned_at: { $lt: new Date(today.getFullYear(), today.getMonth(), today.getDate()) },
-      reward_completed_at: { $lt: new Date(today.getFullYear(), today.getMonth(), today.getDate()) },
-    })
-      .sort({ created_at: 1 })
-      .limit(4);
+      reward_planned_at: { $lte: new Date(1111, 10, 13) },
+      reward_completed_at: { $lte: new Date(1111, 10, 13) },
+    }).sort({ created_at: 1 });
 
     let candyArray = [];
 
@@ -72,8 +71,7 @@ router.get('/waitingCandy', auth, async (req: Request, res: Response) => {
       const categoryId = await candy['category_id'];
       const category = await Category.findById(categoryId);
       const createdDate = candy['created_at'];
-      const now = new Date();
-      const dDay = Math.floor(Math.abs(now.getTime() - createdDate.getTime()) / (1000 * 3600 * 24));
+      const dDay = Math.floor(Math.abs(today.getTime() - createdDate.getTime()) / (1000 * 3600 * 24));
 
       data['category_image_url'] = category['category_image_url'];
       data['waiting_date'] = dDay;
@@ -159,6 +157,7 @@ router.post(
         reward_planned_at: new Date(1111, 10, 11),
         created_at: new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())),
         message: '',
+        detail_info: req.body.detail_info,
         candy_image_url: req.body.candy_image_url,
       });
 
