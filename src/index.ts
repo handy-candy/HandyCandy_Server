@@ -6,6 +6,8 @@ const app = express();
 // Connect Database
 connectDB();
 app.use(express.json());
+app.use(express.urlencoded());
+app.use('/api/candies', require('./api/candies'));
 app.use('/api/users', require('./api/user'));
 // error handler
 app.use((err, req, res, next) => {
