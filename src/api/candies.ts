@@ -21,7 +21,7 @@ router.get('/commingCandy', auth, async (req: Request, res: Response) => {
       user_id: req.body.user.id,
       reward_planned_at: { $gte: new Date(today.getFullYear(), today.getMonth(), today.getDate()) },
       reward_completed_at: { $lt: new Date(today.getFullYear(), today.getMonth(), today.getDate()) },
-    });
+    }).sort({ reward_planned_at: 1 });
 
     let candyArray = [];
 
@@ -30,12 +30,13 @@ router.get('/commingCandy', auth, async (req: Request, res: Response) => {
       const categoryId = await candy['category_id'];
       const category = await Category.findById(categoryId);
       const plannedDate = candy['reward_planned_at'];
-      const now = new Date();
-      const dDay = plannedDate.getDate() - now.getDate();
+      const dDay = Math.floor(Math.abs(today.getTime() - plannedDate.getTime()) / (1000 * 3600 * 24));
 
       data['category_image_url'] = category['category_image_url'];
       data['category_name'] = category['name'];
       data['d_day'] = dDay;
+      data['month'] = plannedDate.getMonth() + 1;
+      data['date'] = plannedDate.getDate();
       candyArray.push(data);
     }
 
@@ -158,7 +159,6 @@ router.post(
         reward_planned_at: new Date(1111, 10, 11),
         created_at: new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())),
         message: '',
-        detail_info: req.body.detail_info,
         candy_image_url: req.body.candy_image_url,
       });
 
