@@ -7,8 +7,9 @@ const app = express();
 connectDB();
 app.use(express.urlencoded());
 app.use(express.json());
-app.use('/api/users', require('./api/User'));
-app.use('/api/candies', require('./api/Candies'));
+app.use('/userInfo', require('./api/userInfo'));
+app.use('/api/users', require('./api/user'));
+app.use('/api/candies', require('./api/candies'));
 
 // error handler
 app.use((err, req, res, next) => {

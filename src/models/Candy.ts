@@ -35,6 +35,9 @@ const CandySchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  detail_info: {
+    type: String,
+  },
 });
 
 export default mongoose.model<ICandy & mongoose.Document>('Candy', CandySchema);
