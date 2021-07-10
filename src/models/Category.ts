@@ -10,6 +10,10 @@ const CategorySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  banner: {
+    type: String,
+    required: true,
+  },
 });
 
 export default mongoose.model<ICategory & mongoose.Document>('Category', CategorySchema);

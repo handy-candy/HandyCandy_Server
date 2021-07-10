@@ -10,4 +10,5 @@ export interface ICandy {
   user_id: mongoose.Types.ObjectId;
   category_id: mongoose.Types.ObjectId;
   created_at?: Date;
+  detail_info?: String;
 }

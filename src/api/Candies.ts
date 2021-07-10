@@ -1,9 +1,94 @@
 import { Router, Request, Response } from 'express';
 import Candy from '../models/Candy';
+import Category from '../models/Category';
 import auth from '../middleware/auth';
 
 const router = Router();
 
+/**
+ * @route GET api/candies/commingCandy
+ * @desc Get commingCandies by user ID
+ */
+
+router.get('/commingCandy', auth, async (req: Request, res: Response) => {
+  try {
+    const today = new Date();
+    const candies = await Candy.find({
+      user_id: req.body.user.id,
+      reward_planned_at: { $gte: new Date(today.getFullYear(), today.getMonth(), today.getDate()) },
+      reward_completed_at: { $lt: new Date(today.getFullYear(), today.getMonth(), today.getDate()) },
+    });
+
+    let candyArray = [];
+
+    for (const candy of candies) {
+      let data = { candy_id: candy['_id'], candy_image_url: candy['candy_image_url'], candy_name: candy['name'] };
+      const categoryId = await candy['category_id'];
+      const category = await Category.findById(categoryId);
+      const plannedDate = candy['reward_planned_at'];
+      const now = new Date();
+      const dDay = plannedDate.getDate() - now.getDate();
+
+      data['category_image_url'] = category['category_image_url'];
+      data['category_name'] = category['name'];
+      data['d_day'] = dDay;
+      candyArray.push(data);
+    }
+
+    const result = await {
+      comming_candy_count: candyArray.length,
+      comming_candy: candyArray,
+    };
+    res.json({
+      status: 200,
+      success: true,
+      result: result,
+    });
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
+});
+
+  router.get('/waitingCandy', auth, async (req: Request, res: Response) => {
+  try {
+    const today = new Date();
+    const candies = await Candy.find({
+      user_id: req.body.user.id,
+      reward_planned_at: { $lt: new Date(today.getFullYear(), today.getMonth(), today.getDate()) },
+      reward_completed_at: { $lt: new Date(today.getFullYear(), today.getMonth(), today.getDate()) },
+    })
+      .sort({ created_at: 1 })
+      .limit(4);
+
+    let candyArray = [];
+
+    for (const candy of candies) {
+      let data = { candy_id: candy['_id'], candy_image_url: candy['candy_image_url'], candy_name: candy['name'] };
+      const categoryId = await candy['category_id'];
+      const category = await Category.findById(categoryId);
+      const createdDate = candy['created_at'];
+      const now = new Date();
+      const dDay = Math.floor(Math.abs(now.getTime() - createdDate.getTime()) / (1000 * 3600 * 24));
+
+      data['category_image_url'] = category['category_image_url'];
+      data['waiting_date'] = dDay;
+      candyArray.push(data);
+    }
+
+    const result = await {
+      waiting_candy_count: candyArray.length,
+      waiting_candy: candyArray,
+    };
+    res.json({
+      status: 200,
+      success: true,
+      result: result,
+    });
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
+});
+  
 router.delete('/:candy_id', auth, async (req: Request, res: Response) => {
   try {
     const candy = await Candy.findById(req.params.candy_id);
@@ -11,7 +96,7 @@ router.delete('/:candy_id', auth, async (req: Request, res: Response) => {
       return res.status(404).json('Candy not found');
     }
     if (candy.user_id.toString() !== req.body.user.id) {
-      return res.status(401).json({ msg: 'User not Authorized' });
+      return res.status(401).json({ error: 'User not Authorized' });
     }
 
     await candy.remove();
@@ -23,7 +108,7 @@ router.delete('/:candy_id', auth, async (req: Request, res: Response) => {
     });
   } catch (err) {
     if (err.kind === 'ObjectId') {
-      return res.status(404).json({ msg: 'Candy not found' });
+      return res.status(404).json({ error: 'Candy not found' });
     }
     res.status(500).send('Server Error');
   }
@@ -46,5 +131,4 @@ router.get('/recommendCandy', async (req: Request, res: Response) => {
     res.status(500).send('Server Error');
   }
 });
-
 module.exports = router;
