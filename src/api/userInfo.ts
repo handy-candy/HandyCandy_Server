@@ -29,12 +29,11 @@ router.get('/', auth, async (req: Request, res: Response) => {
           $lt: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
         },
       });
-      if (comming_candies) {
+      if (comming_candies.length) {
         const cnt = comming_candies.length;
         const random = Math.floor(Math.random() * cnt);
-        console.log(cnt);
         const single = comming_candies[random];
-        console.log(single);
+
         banner = `오늘은 ${single['name']}을 하는 날이네요!`;
       } else {
         const find_candies = await Candy.find({
@@ -44,7 +43,7 @@ router.get('/', auth, async (req: Request, res: Response) => {
             $lt: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 5),
           },
         });
-        if (find_candies) {
+        if (find_candies.length) {
           const cnt = find_candies.length;
           const random = Math.floor(Math.random() * cnt);
           const single = find_candies[random];
@@ -59,7 +58,7 @@ router.get('/', auth, async (req: Request, res: Response) => {
             reward_completed_at: { $lte: new Date(1111, 10, 13) },
           });
 
-          if (waiting_candies) {
+          if (waiting_candies.length) {
             banner = `기다리는 캔디가 ${waiting_candies.length}개가 있어요!`;
           } else {
             const find_candies = await Candy.find({
@@ -68,7 +67,7 @@ router.get('/', auth, async (req: Request, res: Response) => {
                 $gte: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 6),
               },
             });
-            if (find_candies) {
+            if (find_candies.length) {
               const cnt = find_candies.length;
               const random = Math.floor(Math.random() * cnt);
               const single = find_candies[random];
