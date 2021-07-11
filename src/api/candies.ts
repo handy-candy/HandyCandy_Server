@@ -102,6 +102,8 @@ router.delete('/:candy_id', auth, async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'User not Authorized' });
     }
 
+    const review = await Review.findOne({ candy_id: req.params.candy_id });
+    if (review) await review.remove();
     await candy.remove();
 
     res.json({
