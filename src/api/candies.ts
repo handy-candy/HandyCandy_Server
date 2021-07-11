@@ -160,6 +160,7 @@ router.post(
         created_at: new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())),
         message: '',
         detail_info: req.body.detail_info,
+        reward_completed_at: new Date(1111, 10, 11),
         candy_image_url: req.body.candy_image_url,
       });
 
