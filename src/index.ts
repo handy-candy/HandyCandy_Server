@@ -10,7 +10,8 @@ app.use(express.json());
 app.use('/api/candies', require('./api/candies'));
 app.use('/api/userInfo', require('./api/userInfo'));
 app.use('/api/users', require('./api/user'));
-
+app.use('/api/category', require('./api/category'));
+app.use('/api/candy', require('./api/candy'));
 // error handler
 app.use((err, req, res, next) => {
   // set locals, only providing error in development
