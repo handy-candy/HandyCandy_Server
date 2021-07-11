@@ -21,29 +21,28 @@ router.get('/commingCandy', auth, async (req: Request, res: Response) => {
       user_id: req.body.user.id,
       reward_planned_at: { $gte: new Date(today.getFullYear(), today.getMonth(), today.getDate()) },
       reward_completed_at: { $lte: new Date(1111, 10, 13) },
-    });
+    }).sort({ reward_planned_at: 1 });
 
-    let candyArray = [];
+    let candy_array = [];
 
     for (const candy of candies) {
       let data = { candy_id: candy['_id'], candy_image_url: candy['candy_image_url'], candy_name: candy['name'] };
-      const categoryId = await candy['category_id'];
-      const category = await Category.findById(categoryId);
-      const plannedDate = candy['reward_planned_at'];
-      const now = new Date();
-      const dDay = plannedDate.getDate() - now.getDate();
+      const category_id = await candy['category_id'];
+      const category = await Category.findById(category_id);
+      const planned_date = candy['reward_planned_at'];
+      const d_day = Math.floor(Math.abs(planned_date.getTime() - today.getTime()) / (1000 * 3600 * 24));
 
       data['category_image_url'] = category['category_image_url'];
       data['category_name'] = category['name'];
-      data['d_day'] = dDay;
-      data['month'] = plannedDate.getMonth() + 1;
-      data['date'] = plannedDate.getDate();
-      candyArray.push(data);
+      data['d_day'] = d_day;
+      data['month'] = planned_date.getMonth() + 1;
+      data['date'] = planned_date.getDate();
+      candy_array.push(data);
     }
 
     const result = await {
-      comming_candy_count: candyArray.length,
-      comming_candy: candyArray,
+      comming_candy_count: candy_array.length,
+      comming_candy: candy_array,
     };
     res.json({
       status: 200,
@@ -64,23 +63,23 @@ router.get('/waitingCandy', auth, async (req: Request, res: Response) => {
       reward_completed_at: { $lte: new Date(1111, 10, 13) },
     }).sort({ created_at: 1 });
 
-    let candyArray = [];
+    let candy_array = [];
 
     for (const candy of candies) {
       let data = { candy_id: candy['_id'], candy_image_url: candy['candy_image_url'], candy_name: candy['name'] };
-      const categoryId = await candy['category_id'];
-      const category = await Category.findById(categoryId);
-      const createdDate = candy['created_at'];
-      const dDay = Math.floor(Math.abs(today.getTime() - createdDate.getTime()) / (1000 * 3600 * 24));
+      const category_id = await candy['category_id'];
+      const category = await Category.findById(category_id);
+      const created_date = candy['created_at'];
+      const d_day = Math.floor(Math.abs(today.getTime() - created_date.getTime()) / (1000 * 3600 * 24));
 
       data['category_image_url'] = category['category_image_url'];
-      data['waiting_date'] = dDay;
-      candyArray.push(data);
+      data['waiting_date'] = d_day;
+      candy_array.push(data);
     }
 
     const result = await {
-      waiting_candy_count: candyArray.length,
-      waiting_candy: candyArray,
+      waiting_candy_count: candy_array.length,
+      waiting_candy: candy_array,
     };
     res.json({
       status: 200,
@@ -104,6 +103,7 @@ router.delete('/:candy_id', auth, async (req: Request, res: Response) => {
 
     const review = await Review.findOne({ candy_id: req.params.candy_id });
     if (review) await review.remove();
+
     await candy.remove();
 
     res.json({
@@ -119,7 +119,7 @@ router.delete('/:candy_id', auth, async (req: Request, res: Response) => {
   }
 });
 
-router.get('/recommendCandy', async (req: Request, res: Response) => {
+router.get('/recommendCandy', auth, async (req: Request, res: Response) => {
   //기능개발x 일단 더미로 감
   try {
     res.json({
@@ -194,8 +194,8 @@ router.put('/date/:candy_id', auth, async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'User not Authorized' });
     }
 
-    const plannedDate = new Date(Date.UTC(req.body.year, req.body.month - 1, req.body.date));
-    candy['reward_planned_at'] = plannedDate;
+    const planned_date = new Date(Date.UTC(req.body.year, req.body.month - 1, req.body.date));
+    candy['reward_planned_at'] = planned_date;
     candy['message'] = req.body.message;
 
     await candy.save();
@@ -225,26 +225,26 @@ router.get('/completedCandy', auth, async (req: Request, res: Response) => {
       },
     }).sort({ reward_completed_at: -1 });
 
-    let candyArray = [];
+    let candy_array = [];
 
     for (const candy of candies) {
       let data = { candy_id: candy['_id'], candy_image_url: candy['candy_image_url'], candy_name: candy['name'] };
-      const categoryId = await candy['category_id'];
-      const category = await Category.findById(categoryId);
+      const category_id = await candy['category_id'];
+      const category = await Category.findById(category_id);
 
       data['category_image_url'] = category['category_image_url'];
       data['category_name'] = category['name'];
       data['year'] = candy['reward_completed_at'].getFullYear();
       data['month'] = candy['reward_completed_at'].getMonth() + 1;
       data['date'] = candy['reward_completed_at'].getDate();
-      candyArray.push(data);
+      candy_array.push(data);
     }
 
     const result = await {
       user_nickname: user_nickname['nickname'],
       month: today.getMonth() + 1,
       candy_count: candies.length,
-      completed_candy: candyArray,
+      completed_candy: candy_array,
     };
     res.json({
       status: 200,
