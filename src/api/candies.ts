@@ -19,7 +19,7 @@ router.get('/commingCandy', auth, async (req: Request, res: Response) => {
     const today = new Date(Date.UTC(2021, 6, 17, 0, 0, 0));
     const candies = await Candy.find({
       user_id: req.body.user.id,
-      reward_planned_at: { $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth()), 0, 0, 0) },
+      reward_planned_at: { $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth(), 0, 0, 0)) },
       reward_completed_at: { $lte: new Date(Date.UTC(1111, 10, 13, 0, 0, 0)) },
     }).sort({ reward_planned_at: 1 });
 
@@ -228,7 +228,7 @@ router.put('/date/:candy_id', auth, async (req: Request, res: Response) => {
 
 router.get('/completedCandy', auth, async (req: Request, res: Response) => {
   try {
-    const today = new Date(Date.UTC(2021, 6, 17));
+    const today = new Date(Date.UTC(2021, req.body.month - 1, 17));
     const user_nickname = await User.findById(req.body.user.id).select({ nickname: 1, _id: 0 });
     const candies = await Candy.find({
       user_id: req.body.user.id,
@@ -244,9 +244,17 @@ router.get('/completedCandy', auth, async (req: Request, res: Response) => {
         $lt: new Date(Date.UTC(today.getFullYear(), today.getMonth())),
         $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth() - 1)),
       },
-    });
+    }).populate('category_id', { category_image_url: 1, _id: 0 });
 
-    console.log(before_candies);
+    let end = 9;
+    if (before_candies.length <= 9) end = before_candies.length;
+    else end = 9;
+
+    const before_categoris = await {
+      category_image_url: before_candies.slice(0, end).map((v) => {
+        return v.category_id['category_image_url'];
+      }),
+    };
 
     const after_candies = await Candy.find({
       user_id: req.body.user.id,
@@ -254,29 +262,39 @@ router.get('/completedCandy', auth, async (req: Request, res: Response) => {
         $lt: new Date(Date.UTC(today.getFullYear(), today.getMonth() + 2)),
         $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth() + 1)),
       },
-    });
-    console.log(new Date(Date.UTC(today.getFullYear(), today.getMonth() + 1)));
-    let candy_array = [];
+    }).populate('category_id', { category_image_url: 1, _id: 0 });
 
+    if (after_candies.length <= 9) end = after_candies.length;
+    else end = 9;
+    const after_categoris = await {
+      category_image_url: after_candies.slice(0, end).map((v) => {
+        return v.category_id['category_image_url'];
+      }),
+    };
+
+    let candy_array = [];
+    let cur_categories = [];
     for (const candy of candies) {
       let data = { candy_id: candy['_id'], candy_image_url: candy['candy_image_url'], candy_name: candy['name'] };
-      const category_id = await candy['category_id'];
-      const category = await Category.findById(category_id);
+      let category_id = await candy['category_id'];
+      let category = await Category.findById(category_id);
 
       data['category_image_url'] = category['category_image_url'];
       data['category_name'] = category['name'];
       data['year'] = candy['reward_completed_at'].getFullYear();
       data['month'] = candy['reward_completed_at'].getMonth() + 1;
       data['date'] = candy['reward_completed_at'].getDate();
+      if (cur_categories.length < 9) cur_categories.push(category['category_image_url']);
       candy_array.push(data);
     }
 
     const result = await {
       user_nickname: user_nickname['nickname'],
-      month: today.getMonth() + 1,
-      before_candy_count: before_candies.length,
-      after_candy_count: after_candies.length,
+      month: req.body.month,
       candy_count: candies.length,
+      cur_categories: cur_categories,
+      before_categoris: before_categoris['category_image_url'],
+      after_categoris: after_categoris['category_image_url'],
       completed_candy: candy_array,
     };
     res.json({
