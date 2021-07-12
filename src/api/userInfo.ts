@@ -12,10 +12,18 @@ const router = Router();
 
 router.get('/', auth, async (req: Request, res: Response) => {
   try {
-    const candies = await Candy.find({ user_id: req.body.user.id });
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const candies = await Candy.find({
+      user_id: req.body.user.id,
+      reward_completed_at: {
+        $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth())),
+        $lt: new Date(Date.UTC(today.getFullYear(), today.getMonth() + 1)),
+      },
+    });
+
     const user_nickname = await User.findById(req.body.user.id).select({ nickname: 1, _id: 0 });
     const candy_count = candies.length;
-    const today = new Date();
     const month = today.getMonth() + 1;
     const date = today.getDate();
 
@@ -25,10 +33,11 @@ router.get('/', auth, async (req: Request, res: Response) => {
       const comming_candies = await Candy.find({
         user_id: req.body.user.id,
         reward_planned_at: {
-          $gte: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
-          $lt: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
+          $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth(), 17, 0, 0, 0, 0)),
+          $lt: new Date(Date.UTC(today.getFullYear(), today.getMonth(), 18, 0, 0, 0, 0)),
         },
       });
+
       if (comming_candies.length) {
         const cnt = comming_candies.length;
         const random = Math.floor(Math.random() * cnt);
@@ -101,7 +110,7 @@ router.get('/', auth, async (req: Request, res: Response) => {
         user_nickname: user_nickname['nickname'],
         candy_count_phrase: candy_count_phrase,
         month: month,
-        date: date,
+        date: 17,
         phrase: phrase,
         banner: banner,
       },
