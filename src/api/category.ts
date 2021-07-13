@@ -171,18 +171,18 @@ router.get('/detail/:id', auth, async (req: Request, res: Response) => {
     if (!category) {
       return res.status(404).json({ msg: 'category not found' });
     }
+    let banner = get_banner_image_url(category['category_image_url']);
     const today = new Date();
-    const candy_array = await Candy.find({ category_id: category['_id'] }).sort({ date: -1 });
     const coming_candy_array = await Candy.find({
       user_id: req.body.user.id,
       reward_planned_at: { $gte: new Date(today.getFullYear(), today.getMonth(), today.getDate()) },
       reward_completed_at: { $lt: new Date(today.getFullYear(), today.getMonth(), today.getDate()) },
-    });
+    }).sort({ date: -1});
     const waiting_candy_array = await Candy.find({
       user_id: req.body.user.id,
       reward_planned_at: { $lt: new Date(today.getFullYear(), today.getMonth(), today.getDate()) },
       reward_completed_at: { $lt: new Date(today.getFullYear(), today.getMonth(), today.getDate()) },
-    });
+    }).sort({ date: -1});
     let result_coming_candy_array = [];
     let result_waiting_candy_array = [];
     for (const candy of coming_candy_array) {
@@ -214,11 +214,12 @@ router.get('/detail/:id', auth, async (req: Request, res: Response) => {
     let coming_candy_count = coming_candy_array.length;
     let waiting_candy_count = waiting_candy_array.length;
     const result = await {
+      banner: banner,
       all_candy_count: coming_candy_count + waiting_candy_count,
       coming_candy_count: coming_candy_count,
       waiting_candy_count: waiting_candy_count,
       coming_candy: result_coming_candy_array,
-      waiting_candy: result_waiting_candy_array,
+      waiting_candy: result_waiting_candy_array
     };
     res.json({
       status: 200,
@@ -229,5 +230,41 @@ router.get('/detail/:id', auth, async (req: Request, res: Response) => {
     res.status(500).send('Server Error');
   }
 });
+
+let get_banner_image_url = function(var1){ 
+  if(var1 == "Ball" ){
+    return "https://sopt-join-seminar.s3.ap-northeast-2.amazonaws.com/banner/bboddo.png";
+  }
+  else if(var1 == "Clover"){
+    return "https://sopt-join-seminar.s3.ap-northeast-2.amazonaws.com/banner/flower.png";
+  }
+  else if(var1 == "Donut"){
+    return "https://sopt-join-seminar.s3.ap-northeast-2.amazonaws.com/banner/donut.png";
+  }
+  else if(var1 == "Double"){
+    return "https://sopt-join-seminar.s3.ap-northeast-2.amazonaws.com/banner/dd.png";
+  }
+  else if(var1 == "Flower"){
+    return "https://sopt-join-seminar.s3.ap-northeast-2.amazonaws.com/banner/orange.png";
+  }
+  else if(var1 == "Fork"){
+    return "https://sopt-join-seminar.s3.ap-northeast-2.amazonaws.com/banner/3d.png";
+  }
+  else if(var1 == "Leaf"){
+    return "https://sopt-join-seminar.s3.ap-northeast-2.amazonaws.com/banner/leaf.png";
+  }
+  else if(var1 == "Magnet"){
+    return "https://sopt-join-seminar.s3.ap-northeast-2.amazonaws.com/banner/u.png";
+  }
+  else if(var1 == "WaterDrop"){
+    return "https://sopt-join-seminar.s3.ap-northeast-2.amazonaws.com/banner/mint.png";
+  }
+  else if(var1 == "X"){
+    return "https://sopt-join-seminar.s3.ap-northeast-2.amazonaws.com/banner/blue.png";
+  }
+  else{
+    return "";
+  }
+}
 
 module.exports = router;
