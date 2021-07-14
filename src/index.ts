@@ -1,16 +1,17 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import connectDB from './Logger/db';
 const cors = require('cors');
 const app = express();
 const cookieParser = require('cookie-parser');
-const corsOptions = {
-  origin: 'http://localhost:3000', // 허락하고자 하는 요청 주소
-  credentials: true, // true로 하면 설정한 내용을 response 헤더에 추가 해줍니다.
-};
-
+app.use(cors());
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH');
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With, content-type, x-access-token');
+  next();
+});
 // Connect Database
 connectDB();
-app.use(cors(corsOptions));
 app.use(express.urlencoded());
 app.use(cookieParser());
 app.use(express.json());
