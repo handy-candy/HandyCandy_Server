@@ -15,6 +15,7 @@ const router = Router();
  */
 
 router.get('/commingCandy', auth, async (req: Request, res: Response) => {
+  res.header('Access-Control-Allow-Origin', '*');
   try {
     const today = new Date(Date.UTC(2021, 6, 17, 0, 0, 0));
     const candies = await Candy.find({
@@ -67,6 +68,7 @@ router.get('/commingCandy', auth, async (req: Request, res: Response) => {
 });
 
 router.get('/waitingCandy', auth, async (req: Request, res: Response) => {
+  res.header('Access-Control-Allow-Origin', '*');
   try {
     const today = new Date(Date.UTC(2021, 6, 17, 0, 0, 0));
     const candies = await Candy.find({
@@ -104,6 +106,7 @@ router.get('/waitingCandy', auth, async (req: Request, res: Response) => {
 });
 
 router.delete('/:candy_id', auth, async (req: Request, res: Response) => {
+  res.header('Access-Control-Allow-Origin', '*');
   try {
     const candy = await Candy.findById(req.params.candy_id);
     if (!candy) {
@@ -132,6 +135,7 @@ router.delete('/:candy_id', auth, async (req: Request, res: Response) => {
 });
 
 router.get('/recommendCandy', auth, async (req: Request, res: Response) => {
+  res.header('Access-Control-Allow-Origin', '*');
   //기능개발x 일단 더미로 감
   try {
     res.json({
@@ -157,6 +161,7 @@ router.post(
     check('candy_name', 'CandyName is required').not().isEmpty(),
   ],
   async (req: Request, res: Response) => {
+    res.header('Access-Control-Allow-Origin', '*');
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ error: errors.array() });
@@ -197,6 +202,7 @@ router.post(
 );
 
 router.put('/date/:candy_id', auth, async (req: Request, res: Response) => {
+  res.header('Access-Control-Allow-Origin', '*');
   try {
     const candy = await Candy.findById(req.params.candy_id);
 
@@ -227,6 +233,7 @@ router.put('/date/:candy_id', auth, async (req: Request, res: Response) => {
 });
 
 router.get('/completedCandy', auth, async (req: Request, res: Response) => {
+  res.header('Access-Control-Allow-Origin', '*');
   try {
     const today = new Date(Date.UTC(2021, req.body.month - 1, 17));
     const user_nickname = await User.findById(req.body.user.id).select({ nickname: 1, _id: 0 });
@@ -309,6 +316,7 @@ router.get('/completedCandy', auth, async (req: Request, res: Response) => {
 });
 
 router.put('/completedCandy', auth, async (req: Request, res: Response) => {
+  res.header('Access-Control-Allow-Origin', '*');
   try {
     const { review_id, candy_name, feeling, message } = req.body;
 
@@ -342,6 +350,7 @@ router.put('/completedCandy', auth, async (req: Request, res: Response) => {
 });
 
 router.get('/review/:candy_id', auth, async (req: Request, res: Response) => {
+  res.header('Access-Control-Allow-Origin', '*');
   try {
     const today = new Date();
     const candy = await Candy.findById(req.params.candy_id);
@@ -377,6 +386,7 @@ router.post(
   auth,
   [check('feeling', 'FeelingID is required').not().isEmpty()],
   async (req: Request, res: Response) => {
+    res.header('Access-Control-Allow-Origin', '*');
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ error: errors.array() });
@@ -415,6 +425,7 @@ router.post(
 );
 
 router.get('/completedCandy/detail/:candy_id', auth, async (req: Request, res: Response) => {
+  res.header('Access-Control-Allow-Origin', '*');
   try {
     const candy = await Candy.findById(req.params.candy_id);
     const category = await Category.findById(candy['category_id']);
@@ -454,6 +465,7 @@ router.get('/completedCandy/detail/:candy_id', auth, async (req: Request, res: R
 });
 
 router.put('/:candy_id', auth, async (req: Request, res: Response) => {
+  res.header('Access-Control-Allow-Origin', '*');
   try {
     const { year, month, date, candy_name, category_id, message } = req.body;
 
@@ -484,6 +496,7 @@ router.put('/:candy_id', auth, async (req: Request, res: Response) => {
 });
 
 router.put('/image/:candy_id', auth, async (req: Request, res: Response) => {
+  res.header('Access-Control-Allow-Origin', '*');
   try {
     const candy = await Candy.findById(req.params.candy_id);
 

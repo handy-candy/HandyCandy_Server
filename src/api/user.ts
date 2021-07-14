@@ -24,6 +24,7 @@ router.post(
     check('notice_agreement', 'Notice agreement is required').not().isEmpty(),
   ],
   async (req: Request, res: Response) => {
+    res.header('Access-Control-Allow-Origin', '*');
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -80,6 +81,7 @@ router.post(
   '/signIn',
   [check('email', 'Please include a valid email').isEmail(), check('password', 'Password is required').exists()],
   async (req: Request, res: Response) => {
+    res.header('Access-Control-Allow-Origin', '*');
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
