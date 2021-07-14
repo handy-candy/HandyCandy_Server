@@ -11,7 +11,6 @@ connectDB();
 app.use(express.urlencoded());
 app.use(cookieParser());
 app.use(express.json());
-app.use(cookieParser());
 app.use('/api/candies', require('./api/candies'));
 app.use('/api/userInfo', require('./api/userInfo'));
 app.use('/api/users', require('./api/user'));
