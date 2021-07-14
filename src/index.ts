@@ -1,12 +1,15 @@
 import express from 'express';
 import connectDB from './Logger/db';
+import cors from 'cors';
 
-const cors = require('cors');
 const app = express();
-
+const allowedOrigins = ['http://localhost:3000'];
+const options: cors.CorsOptions = {
+  origin: allowedOrigins,
+};
 // Connect Database
 connectDB();
-app.use(cors());
+app.use(cors(options));
 app.use(express.urlencoded());
 app.use(express.json());
 app.use('/api/candies', require('./api/candies'));
