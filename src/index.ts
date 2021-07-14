@@ -1,21 +1,16 @@
 import express from 'express';
 import connectDB from './Logger/db';
+import cors from 'cors';
 
-const cors = require('cors');
 const app = express();
 const cookieParser = require('cookie-parser');
-const corsOptions = {
-  origin: ['http://localhost:3000', "https://handycandy-client-handycandy-web.vercel.app/" ], // 허락하고자 하는 요청 주소
-  credentials: true, // true로 하면 설정한 내용을 response 헤더에 추가 해줍니다.
-};
 
 // Connect Database
+app.use(cors());
 connectDB();
-app.use(cors(corsOptions));
 app.use(express.urlencoded());
 app.use(cookieParser());
 app.use(express.json());
-app.use(cookieParser());
 app.use('/api/candies', require('./api/candies'));
 app.use('/api/userInfo', require('./api/userInfo'));
 app.use('/api/users', require('./api/user'));
