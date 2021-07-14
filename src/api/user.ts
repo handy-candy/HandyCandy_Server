@@ -1,12 +1,8 @@
 import express, { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
-import config from '../config';
 import { check, validationResult } from 'express-validator';
-
+import { SignInDto, SignUpDto } from '../dto/user.dto';
+import { UserService } from '../services';
 const router = express.Router();
-
-import User from '../models/User';
 
 /**
  *  @route Post api/users/signUp
@@ -30,44 +26,22 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password, nickname, gender, birth, notice_agreement } = req.body;
+    const signup_dto: SignUpDto = {
+      email: req.body.email,
+      password: req.body.password,
+      nickname: req.body.nickname,
+      gender: req.body.gender,
+      birth: req.body.birth,
+      notice_agreement: req.body.notice_agreement,
+    };
 
-    try {
-      let user = await User.findOne({ email });
-
-      if (user) {
-        res.status(400).json({
-          errors: [{ msg: 'User already exists' }],
-        });
-      }
-
-      user = new User({
-        email,
-        password,
-        nickname,
-        gender,
-        birth,
-        notice_agreement,
-      });
-
-      await user.save();
-      const salt = await bcrypt.genSalt(10);
-      user.salt = salt;
-      user.password = await bcrypt.hash(password, salt);
-
-      const payload = {
-        user: {
-          id: user.id,
-        },
-      };
-      jwt.sign(payload, config.jwtSecret, { expiresIn: '7d' }, async (err, token) => {
-        if (err) throw err;
-        await user.save();
-        res.json({ token });
-      });
-    } catch (err) {
-      console.error(err.message);
+    const result = await UserService.signUp(signup_dto);
+    if (result.message === 'User already exists') {
+      return res.status(400).json({ errors: [{ msg: 'User already exists' }] });
+    } else if (result.message === 'Server Error') {
       res.status(500).send('Server Error');
+    } else {
+      res.status(200).json({ token: result });
     }
   },
 );
@@ -86,36 +60,18 @@ router.post(
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const { email, password } = req.body;
+    const signin_dto: SignInDto = {
+      email: req.body.email,
+      password: req.body.password,
+    };
 
-    try {
-      let user = await User.findOne({ email });
-
-      if (!user) {
-        res.status(400).json({
-          errors: [{ msg: 'Invalid Credentials' }],
-        });
-      }
-
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        res.status(400).json({
-          errors: [{ msg: 'Invalid Credentials' }],
-        });
-      }
-
-      const payload = {
-        user: {
-          id: user.id,
-        },
-      };
-      jwt.sign(payload, config.jwtSecret, { expiresIn: '7d' }, (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      });
-    } catch (err) {
-      console.error(err.message);
+    const result = await UserService.signIn(signin_dto);
+    if (result.message === 'Invalid Credentials') {
+      return res.status(400).json({ errors: [{ msg: 'Invalid Credentials' }] });
+    } else if (result.message === 'Server Error') {
       res.status(500).send('Server Error');
+    } else {
+      res.status(200).json({ token: result });
     }
   },
 );
