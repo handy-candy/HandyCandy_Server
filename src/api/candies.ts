@@ -20,7 +20,7 @@ router.get('/commingCandy', auth, async (req: Request, res: Response) => {
     const today = new Date(Date.UTC(2021, 6, 17, 0, 0, 0));
     const candies = await Candy.find({
       user_id: req.body.user.id,
-      reward_planned_at: { $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth(), 0, 0, 0)) },
+      reward_planned_at: { $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth(), 0, 0, 0, 0)) },
       reward_completed_at: { $lte: new Date(Date.UTC(1111, 10, 13, 0, 0, 0)) },
     }).sort({ reward_planned_at: 1 });
 
@@ -232,24 +232,23 @@ router.put('/date/:candy_id', auth, async (req: Request, res: Response) => {
   }
 });
 
-router.get('/completedCandy', auth, async (req: Request, res: Response) => {
-  res.header('Access-Control-Allow-Origin', '*');
+router.get('/completedCandy/:month', auth, async (req: Request, res: Response) => {
   try {
-    const today = new Date(Date.UTC(2021, req.body.month - 1, 17));
+    const today = new Date(Date.UTC(2021, req.params.month - 1, 17, 0, 0, 0));
     const user_nickname = await User.findById(req.body.user.id).select({ nickname: 1, _id: 0 });
     const candies = await Candy.find({
       user_id: req.body.user.id,
       reward_completed_at: {
         $lte: new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)),
-        $gt: new Date(Date.UTC(today.getFullYear(), today.getMonth(), 0, 0, 0)),
+        $gt: new Date(Date.UTC(today.getFullYear(), today.getMonth(), 1, 0, 0, 0)),
       },
     }).sort({ reward_completed_at: -1 });
 
     const before_candies = await Candy.find({
       user_id: req.body.user.id,
       reward_completed_at: {
-        $lt: new Date(Date.UTC(today.getFullYear(), today.getMonth())),
-        $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth() - 1)),
+        $lt: new Date(Date.UTC(today.getFullYear(), today.getMonth(), 1, 0, 0, 0)),
+        $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth() - 1, 1, 0, 0, 0)),
       },
     }).populate('category_id', { category_image_url: 1, _id: 0 });
 
@@ -266,8 +265,8 @@ router.get('/completedCandy', auth, async (req: Request, res: Response) => {
     const after_candies = await Candy.find({
       user_id: req.body.user.id,
       reward_completed_at: {
-        $lt: new Date(Date.UTC(today.getFullYear(), today.getMonth() + 2)),
-        $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth() + 1)),
+        $lt: new Date(Date.UTC(today.getFullYear(), today.getMonth() + 2, 1, 0, 0, 0)),
+        $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth() + 1, 1, 0, 0, 0)),
       },
     }).populate('category_id', { category_image_url: 1, _id: 0 });
 
@@ -297,7 +296,7 @@ router.get('/completedCandy', auth, async (req: Request, res: Response) => {
 
     const result = await {
       user_nickname: user_nickname['nickname'],
-      month: req.body.month,
+      month: req.params.month,
       candy_count: candies.length,
       cur_categories: cur_categories,
       before_categoris: before_categoris['category_image_url'],
