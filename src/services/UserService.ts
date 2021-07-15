@@ -38,7 +38,6 @@ export class UserService {
 
   static async signIn(user_dto: SignInDto) {
     try {
-      console.log('user', user_dto);
       let user = await User.findOne({ email: user_dto.email });
 
       if (!user) {
