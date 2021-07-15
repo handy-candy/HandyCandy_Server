@@ -9,6 +9,8 @@ import {
   completedCandyDto,
   modifyCompletedCandyDto,
   reviewDto,
+  modifyCandyDto,
+  moidfyImageDto,
 } from '../dto/candies.dto';
 
 export const comingCandy = async (req: Request, res: Response) => {
@@ -140,10 +142,39 @@ export const addReview = async (req: Request, res: Response) => {
 export const detailCompletedCandies = async (req: Request, res: Response) => {
   const detailCompletedCandy_dto: candyDto = {
     user_id: req.body.user.id,
-    candy_id: req.body.candy_id,
+    candy_id: req.params.candy_id,
   };
 
   const result = await CandiesService.detailCompletedCandies(detailCompletedCandy_dto);
+
+  res.status(200).json({ result: result });
+};
+
+export const modifyCandy = async (req: Request, res: Response) => {
+  const modifyCandy_dto: modifyCandyDto = {
+    user_id: req.body.user.id,
+    candy_id: req.params.candy_id,
+    year: req.body.year,
+    month: req.body.month,
+    date: req.body.date,
+    candy_name: req.body.candy_name,
+    category_id: req.body.category_id,
+    message: req.body.message,
+  };
+
+  const result = await CandiesService.modifyCandy(modifyCandy_dto);
+
+  res.status(200).json({ result: result });
+};
+
+export const modifyImage = async (req: Request, res: Response) => {
+  const modifyImage_dto: moidfyImageDto = {
+    user_id: req.body.user.id,
+    candy_id: req.params.candy_id,
+    candy_image_url: req.body.candy_image_url,
+  };
+
+  const result = await CandiesService.modifyImage(modifyImage_dto);
 
   res.status(200).json({ result: result });
 };

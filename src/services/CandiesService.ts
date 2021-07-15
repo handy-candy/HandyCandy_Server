@@ -6,6 +6,8 @@ import {
   completedCandyDto,
   modifyCompletedCandyDto,
   reviewDto,
+  modifyCandyDto,
+  moidfyImageDto,
 } from '../dto/candies.dto';
 import Candy from '../models/Candy';
 import Category from '../models/Category';
@@ -109,7 +111,7 @@ export class CandiesService {
           message: 'Candy not found',
         };
       }
-      if (candy.user_id !== candy_dto.user_id) {
+      if (candy.user_id.toString() !== candy_dto.user_id.toString()) {
         return { message: 'User not Authorized' };
       }
 
@@ -188,7 +190,7 @@ export class CandiesService {
       if (!candy) {
         return { message: 'Candy not found' };
       }
-      if (candy.user_id !== addDateCandy_dto.user_id) {
+      if (candy.user_id.toString() !== addDateCandy_dto.user_id.toString()) {
         return { message: 'User not Authorized' };
       }
 
@@ -301,7 +303,7 @@ export class CandiesService {
       if (!review) {
         return { message: 'Review not found' };
       }
-      if (candy.user_id !== modifyCompletedCandy_dto.user_id) {
+      if (candy.user_id.toString() !== modifyCompletedCandy_dto.user_id.toString()) {
         return { message: 'User not Authorized' };
       }
       candy['candy_name'] = candy_name;
@@ -329,7 +331,7 @@ export class CandiesService {
       if (!candy) {
         return { message: 'Candy not found' };
       }
-      if (candy.user_id.toString() !== review_dto.user_id.toHexString()) {
+      if (candy.user_id.toString() !== review_dto.user_id.toString()) {
         return { error: 'User not Authorized' };
       }
       const category = await Category.findById(candy['category_id']);
@@ -392,7 +394,7 @@ export class CandiesService {
       if (!candy) {
         return { message: 'Candy not found' };
       }
-      if (candy.user_id !== detailCompletedCandies_dto.user_id) {
+      if (candy.user_id.toString() !== detailCompletedCandies_dto.user_id.toString()) {
         return { message: 'User not Authorized' };
       }
 
@@ -409,6 +411,62 @@ export class CandiesService {
         candy_history: review['message'],
         review_id: review['_id'],
       };
+
+      return result;
+    } catch (err) {
+      console.error(err.message);
+      return {
+        message: 'Server Error',
+      };
+    }
+  }
+
+  static async modifyCandy(modifyCandy_dto: modifyCandyDto) {
+    try {
+      const { user_id, candy_id, year, month, date, candy_name, category_id, message } = modifyCandy_dto;
+
+      const candy = await Candy.findById(candy_id);
+
+      if (!candy) {
+        return { message: 'Review not found' };
+      }
+      if (candy.user_id.toString() !== user_id.toString()) {
+        return { error: 'User not Authorized' };
+      }
+
+      candy['reward_planned_at'] = new Date(Date.UTC(year, month - 1, date, 0, 0, 0));
+      candy['candy_name'] = candy_name;
+      candy['category_id'] = category_id;
+      candy['message'] = message;
+
+      await candy.save();
+
+      const result = '담은 캔디 수정이 완료되었습니다.';
+      return result;
+    } catch (err) {
+      console.error(err.message);
+      return {
+        message: 'Server Error',
+      };
+    }
+  }
+
+  static async modifyImage(modifyImage_dto: moidfyImageDto) {
+    try {
+      const candy = await Candy.findById(modifyImage_dto.candy_id);
+
+      if (!candy) {
+        return { message: 'Review not found' };
+      }
+      if (candy.user_id.toString() !== modifyImage_dto.user_id.toString()) {
+        return { message: 'User not Authorized' };
+      }
+
+      candy['candy_image_url'] = modifyImage_dto.candy_image_url;
+
+      await candy.save();
+
+      const result = '캔디 이미지가 수정되었습니다.';
 
       return result;
     } catch (err) {

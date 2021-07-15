@@ -1,5 +1,5 @@
-import { Router, Request, Response } from 'express';
-import { check, validationResult } from 'express-validator';
+import { Router } from 'express';
+import { check } from 'express-validator';
 import {
   comingCandy,
   waitingCandy,
@@ -12,12 +12,9 @@ import {
   reviewCandy,
   addReview,
   detailCompletedCandies,
+  modifyCandy,
+  modifyImage,
 } from '../controllers';
-import Candy from '../models/Candy';
-import User from '../models/User';
-import Review from '../models/Review';
-import Feeling from '../models/Feeling';
-import Category from '../models/Category';
 import auth from '../middleware/auth';
 const router = Router();
 
@@ -50,61 +47,8 @@ router.post('/review', auth, check_feeling, addReview);
 
 router.get('/completedCandy/detail/:candy_id', auth, detailCompletedCandies);
 
-router.put('/:candy_id', auth, async (req: Request, res: Response) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  try {
-    const { year, month, date, candy_name, category_id, message } = req.body;
+router.put('/:candy_id', auth, modifyCandy);
 
-    const candy = await Candy.findById(req.params.candy_id);
-
-    if (!candy) {
-      return res.status(404).json({ error: 'Review not found' });
-    }
-    if (candy.user_id.toString() !== req.body.user.id) {
-      return res.status(401).json({ error: 'User not Authorized' });
-    }
-
-    candy['reward_planned_at'] = new Date(Date.UTC(year, month - 1, date, 0, 0, 0));
-    candy['candy_name'] = candy_name;
-    candy['category_id'] = category_id;
-    candy['message'] = message;
-
-    await candy.save();
-
-    res.json({
-      status: 200,
-      success: true,
-      result: '담은 캔디 수정이 완료되었습니다.',
-    });
-  } catch (err) {
-    res.status(500).send('Server Error');
-  }
-});
-
-router.put('/image/:candy_id', auth, async (req: Request, res: Response) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  try {
-    const candy = await Candy.findById(req.params.candy_id);
-
-    if (!candy) {
-      return res.status(404).json({ error: 'Review not found' });
-    }
-    if (candy.user_id.toString() !== req.body.user.id) {
-      return res.status(401).json({ error: 'User not Authorized' });
-    }
-
-    candy['candy_image_url'] = req.body.candy_image_url;
-
-    await candy.save();
-
-    res.json({
-      status: 200,
-      success: true,
-      result: '캔디 이미지가 수정되었습니다.',
-    });
-  } catch (err) {
-    res.status(500).send('Server Error');
-  }
-});
+router.put('/image/:candy_id', auth, modifyImage);
 
 module.exports = router;
