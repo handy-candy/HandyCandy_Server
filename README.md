@@ -44,6 +44,13 @@
 <br>
 
 ![Desktop - 1](https://user-images.githubusercontent.com/57944153/123970621-3d61cf80-d9f4-11eb-90db-2ad8f549354f.png)
+
+
+
+# 👀 ERD Diagram
+
+<img src="https://user-images.githubusercontent.com/57944153/125957828-53e4e31f-408c-4528-b1fc-6948c2ebdb26.png" width="100%">
+
 # 📜 Coding Convention
 
 ### 📂 폴더구조
