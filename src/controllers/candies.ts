@@ -158,7 +158,6 @@ export const modifyCandy = async (req: Request, res: Response) => {
   };
 
   const result = await CandiesService.modifyCandy(modifyCandy_dto);
-
   res.status(200).json({ result: result });
 };
 

@@ -535,7 +535,7 @@ export class CandiesService {
       if (candy.user_id.toString() !== modifyCompletedCandy_dto.user_id.toString()) {
         return { message: 'User not Authorized' };
       }
-      candy['candy_name'] = candy_name;
+      candy['name'] = candy_name;
       review['feeling'] = feeling;
       review['message'] = message;
 
@@ -674,20 +674,19 @@ export class CandiesService {
       const candy = await Candy.findById(candy_id);
 
       if (!candy) {
-        return { message: 'Review not found' };
+        return { message: 'candy not found' };
       }
       if (candy.user_id.toString() !== user_id.toString()) {
         return { error: 'User not Authorized' };
       }
 
       candy['reward_planned_at'] = new Date(Date.UTC(year, month - 1, date, 0, 0, 0));
-      candy['candy_name'] = candy_name;
+      candy['name'] = candy_name;
       candy['category_id'] = category_id;
       candy['message'] = message;
 
       await candy.save();
-
-      const result = '담은 캔디 수정이 완료되었습니다.';
+      const result = await '담은 캔디 수정이 완료되었습니다.';
       return result;
     } catch (err) {
       if (err.kind === 'ObjectId') {
