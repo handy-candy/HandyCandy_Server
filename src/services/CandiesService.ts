@@ -135,7 +135,7 @@ export class CandiesService {
     }
   }
 
-  static async recommendCandy(recommendCandy_dto: userDto) {
+  static async recommendCandy() {
     try {
       const result = await [
         { candy_name: '자전거 타고 한강가기', candy_image_url: '', tag_name: '산들바람을 느끼며, 몸을 움직이자!' },

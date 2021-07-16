@@ -31,7 +31,7 @@ router.get('/waitingCandy', auth, waitingCandy);
 
 router.delete('/:candy_id', auth, deleteCandy);
 
-router.get('/recommendCandy', auth, recommendCandy);
+router.get('/recommendCandy', recommendCandy);
 
 router.post('/', auth, check_candy, addCandy);
 

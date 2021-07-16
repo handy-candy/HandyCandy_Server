@@ -44,11 +44,7 @@ export const deleteCandy = async (req: Request, res: Response) => {
 };
 
 export const recommendCandy = async (req: Request, res: Response) => {
-  const recommendCandy_dto: userDto = {
-    user_id: req.body.user.id,
-  };
-
-  const result = await CandiesService.recommendCandy(recommendCandy_dto);
+  const result = await CandiesService.recommendCandy();
 
   res.status(200).json({ result: result });
 };
