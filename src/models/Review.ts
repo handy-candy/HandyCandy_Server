@@ -3,11 +3,9 @@ import { IReview } from '../interfaces/IReview';
 
 const ReviewSchema = new mongoose.Schema({
   feeling: {
-    type: Number,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
-  },
-  review_image_url: {
-    type: String,
+    ref: 'Feeling',
   },
   message: {
     type: String,
