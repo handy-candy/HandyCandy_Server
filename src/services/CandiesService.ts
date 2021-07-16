@@ -14,7 +14,6 @@ import Category from '../models/Category';
 import Review from '../models/Review';
 import User from '../models/User';
 import Feeling from '../models/Feeling';
-import { setPriority } from 'os';
 
 export class CandiesService {
   static async comingCandy(user_dto: userDto) {
@@ -24,7 +23,34 @@ export class CandiesService {
         user_id: user_dto.user_id,
         reward_planned_at: { $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth(), 1, 0, 0, 0)) },
         reward_completed_at: { $lte: new Date(Date.UTC(1111, 10, 13, 0, 0, 0)) },
-      }).sort({ reward_planned_at: 1 });
+      })
+        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
+        .sort({ reward_planned_at: 1 });
+
+      /*
+      const candy_array = await {
+        coming_candy: candies.map((v) => {
+          const planned_date = v.reward_planned_at;
+          let d_day;
+          if (planned_date.getTime() - today.getTime() < 0) {
+            d_day = Math.floor((today.getTime() - planned_date.getTime()) / (1000 * 3600 * 24));
+            d_day *= -1;
+          } else {
+            d_day = Math.floor((planned_date.getTime() - today.getTime()) / (1000 * 3600 * 24));
+          }
+          return {
+            candy_id: v._id,
+            candy_image_url: v.candy_image_url,
+            candy_name: v.name,
+            category_image_url: v.category_id['category_image_url'],
+            d_day: d_day,
+            category_name: v.category_id['name'],
+            month: v.reward_planned_at.getMonth() + 1,
+            date: v.reward_planned_at.getDate(),
+          };
+        }),
+      };
+*/
 
       let candy_array = [];
       let negative = [];
@@ -55,9 +81,10 @@ export class CandiesService {
         }
       }
       candy_array.push(negative);
+
       const result = await {
         comming_candy_count: candies.length,
-        comming_candy: candy_array,
+        comming_candy: candy_array['coming_candy'],
       };
       return result;
     } catch (err) {
@@ -75,26 +102,27 @@ export class CandiesService {
         user_id: user_dto.user_id,
         reward_planned_at: { $lte: new Date(Date.UTC(1111, 10, 13, 0, 0, 0)) },
         reward_completed_at: { $lte: new Date(Date.UTC(1111, 10, 13, 0, 0, 0)) },
-      }).sort({ created_at: -1 });
+      })
+        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
+        .sort({ created_at: -1 });
 
-      let candy_array = [];
-
-      for (const candy of candies) {
-        let data = { candy_id: candy['_id'], candy_image_url: candy['candy_image_url'], candy_name: candy['name'] };
-        const category_id = await candy['category_id'];
-        const category = await Category.findById(category_id);
-        const created_date = candy['created_at'];
-        const d_day = Math.floor(Math.abs(today.getTime() - created_date.getTime()) / (1000 * 3600 * 24));
-
-        data['category_image_url'] = category['category_image_url'];
-        data['waiting_date'] = d_day;
-        data['category_name'] = category['name'];
-        candy_array.push(data);
-      }
+      const candy_array = await {
+        waiting_candy: candies.map((v) => {
+          const created_date = v.created_at;
+          return {
+            candy_id: v._id,
+            candy_image_url: v.candy_image_url,
+            candy_name: v.name,
+            category_image_url: v.category_id['category_image_url'],
+            waiting_date: Math.floor(Math.abs(today.getTime() - created_date.getTime()) / (1000 * 3600 * 24)),
+            category_name: v.category_id['name'],
+          };
+        }),
+      };
 
       const result = await {
-        waiting_candy_count: candy_array.length,
-        waiting_candy: candy_array,
+        waiting_candy_count: candy_array['waiting_candy'].length,
+        waiting_candy: candy_array['waiting_candy'],
       };
       return result;
     } catch (err) {
