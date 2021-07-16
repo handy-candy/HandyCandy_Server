@@ -138,9 +138,21 @@ export class CandiesService {
   static async recommendCandy() {
     try {
       const result = await [
-        { candy_name: '자전거 타고 한강가기', candy_image_url: '', tag_name: '산들바람을 느끼며, 몸을 움직이자!' },
-        { candy_name: '베라 쿼터먹기', candy_image_url: '', tag_name: '지나친 달콤함이 약이되기도! ' },
-        { candy_name: '집 근처 산책하기', candy_image_url: '', tag_name: '오전을 보다 상쾌하게 시작해보자!' },
+        {
+          candy_name: '자전거 타고 한강가기',
+          candy_image_url: 'https://sopt-join-seminar.s3.ap-northeast-2.amazonaws.com/recommendCandy/hanriver.png',
+          tag_name: '산들바람을 느끼며, 몸을 움직이자!',
+        },
+        {
+          candy_name: '베라 쿼터먹기',
+          candy_image_url: 'https://sopt-join-seminar.s3.ap-northeast-2.amazonaws.com/recommendCandy/baskin.png',
+          tag_name: '지나친 달콤함이 약이되기도! ',
+        },
+        {
+          candy_name: '집 근처 산책하기',
+          candy_image_url: 'https://sopt-join-seminar.s3.ap-northeast-2.amazonaws.com/recommendCandy/walking.png',
+          tag_name: '오전을 보다 상쾌하게 시작해보자!',
+        },
       ];
 
       return result;
