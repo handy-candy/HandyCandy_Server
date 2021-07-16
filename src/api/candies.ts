@@ -37,7 +37,7 @@ router.post('/', auth, check_candy, addCandy);
 
 router.put('/date/:candy_id', auth, addDateCandy);
 
-router.get('/completedCandy/:month', auth, completedCandy);
+router.get('/completedCandy', auth, completedCandy);
 
 router.put('/completedCandy', auth, modifyCompletedCandy);
 

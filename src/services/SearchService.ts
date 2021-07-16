@@ -27,6 +27,7 @@ export class SearchService {
       for (const candy of coming_candies) {
         const created_date = candy['created_at'];
         let data = {
+          candy_id: candy['_id'],
           candy_image_url: candy['candy_image_url'],
           waiting_date: Math.floor(Math.abs(today.getTime() - created_date.getTime()) / (1000 * 3600 * 24)),
           category_image_url: candy['category_id']['category_image_url'],
@@ -38,8 +39,8 @@ export class SearchService {
       const completed_array = [];
 
       for (const candy of completed_candies) {
-        const created_date = candy['created_at'];
         let data = {
+          candy_id: candy['_id'],
           candy_image_url: candy['candy_image_url'],
           year: candy['reward_completed_at'].getFullYear(),
           month: candy['reward_completed_at'].getMonth() + 1,

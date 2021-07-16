@@ -14,6 +14,7 @@ import Category from '../models/Category';
 import Review from '../models/Review';
 import User from '../models/User';
 import Feeling from '../models/Feeling';
+import { setPriority } from 'os';
 
 export class CandiesService {
   static async comingCandy(user_dto: userDto) {
@@ -87,6 +88,7 @@ export class CandiesService {
 
         data['category_image_url'] = category['category_image_url'];
         data['waiting_date'] = d_day;
+        data['category_name'] = category['name'];
         candy_array.push(data);
       }
 
@@ -214,74 +216,289 @@ export class CandiesService {
 
   static async completedCandy(completedCandy_dto: completedCandyDto) {
     try {
-      const today = new Date(Date.UTC(2021, completedCandy_dto.month - 1, 17, 0, 0, 0));
+      const today = new Date(Date.UTC(2021, 6, 17, 0, 0, 0));
       const user_nickname = await User.findById(completedCandy_dto.user_id).select({ nickname: 1, _id: 0 });
-      const candies = await Candy.find({
+      const january_candy = await Candy.find({
         user_id: completedCandy_dto.user_id,
         reward_completed_at: {
-          $lte: new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)),
-          $gt: new Date(Date.UTC(today.getFullYear(), today.getMonth(), 1, 0, 0, 0)),
+          $lt: new Date(Date.UTC(today.getFullYear(), 1, 1, 0, 0, 0)),
+          $gte: new Date(Date.UTC(today.getFullYear(), 0, 1, 0, 0, 0)),
         },
-      }).sort({ reward_completed_at: -1 });
+      })
+        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
+        .sort({ reward_completed_at: -1 });
 
-      const before_candies = await Candy.find({
+      const february_candy = await Candy.find({
         user_id: completedCandy_dto.user_id,
         reward_completed_at: {
-          $lt: new Date(Date.UTC(today.getFullYear(), today.getMonth(), 1, 0, 0, 0)),
-          $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth() - 1, 1, 0, 0, 0)),
+          $lt: new Date(Date.UTC(today.getFullYear(), 2, 1, 0, 0, 0)),
+          $gte: new Date(Date.UTC(today.getFullYear(), 1, 1, 0, 0, 0)),
         },
-      }).populate('category_id', { category_image_url: 1, _id: 0 });
+      })
+        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
+        .sort({ reward_completed_at: -1 });
 
-      let end = 9;
-      if (before_candies.length <= 9) end = before_candies.length;
-      else end = 9;
+      const march_candy = await Candy.find({
+        user_id: completedCandy_dto.user_id,
+        reward_completed_at: {
+          $lt: new Date(Date.UTC(today.getFullYear(), 3, 1, 0, 0, 0)),
+          $gte: new Date(Date.UTC(today.getFullYear(), 2, 1, 0, 0, 0)),
+        },
+      })
+        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
+        .sort({ reward_completed_at: -1 });
 
-      const before_categoris = await {
-        category_image_url: before_candies.slice(0, end).map((v) => {
-          return v.category_id['category_image_url'];
+      const april_candy = await Candy.find({
+        user_id: completedCandy_dto.user_id,
+        reward_completed_at: {
+          $lt: new Date(Date.UTC(today.getFullYear(), 4, 1, 0, 0, 0)),
+          $gte: new Date(Date.UTC(today.getFullYear(), 3, 1, 0, 0, 0)),
+        },
+      })
+        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
+        .sort({ reward_completed_at: -1 });
+
+      const may_candy = await Candy.find({
+        user_id: completedCandy_dto.user_id,
+        reward_completed_at: {
+          $lt: new Date(Date.UTC(today.getFullYear(), 5, 1, 0, 0, 0)),
+          $gte: new Date(Date.UTC(today.getFullYear(), 4, 1, 0, 0, 0)),
+        },
+      })
+        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
+        .sort({ reward_completed_at: -1 });
+
+      const june_candy = await Candy.find({
+        user_id: completedCandy_dto.user_id,
+        reward_completed_at: {
+          $lt: new Date(Date.UTC(today.getFullYear(), 6, 1, 0, 0, 0)),
+          $gte: new Date(Date.UTC(today.getFullYear(), 5, 1, 0, 0, 0)),
+        },
+      })
+        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
+        .sort({ reward_completed_at: -1 });
+
+      const july_candy = await Candy.find({
+        user_id: completedCandy_dto.user_id,
+        reward_completed_at: {
+          $lt: new Date(Date.UTC(today.getFullYear(), 7, 1, 0, 0, 0)),
+          $gte: new Date(Date.UTC(today.getFullYear(), 6, 1, 0, 0, 0)),
+        },
+      })
+        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
+        .sort({ reward_completed_at: -1 });
+
+      const august_candy = await Candy.find({
+        user_id: completedCandy_dto.user_id,
+        reward_completed_at: {
+          $lt: new Date(Date.UTC(today.getFullYear(), 8, 1, 0, 0, 0)),
+          $gte: new Date(Date.UTC(today.getFullYear(), 7, 1, 0, 0, 0)),
+        },
+      })
+        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
+        .sort({ reward_completed_at: -1 });
+
+      const sep_candy = await Candy.find({
+        user_id: completedCandy_dto.user_id,
+        reward_completed_at: {
+          $lt: new Date(Date.UTC(today.getFullYear(), 9, 1, 0, 0, 0)),
+          $gte: new Date(Date.UTC(today.getFullYear(), 8, 1, 0, 0, 0)),
+        },
+      })
+        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
+        .sort({ reward_completed_at: -1 });
+
+      const oct_candy = await Candy.find({
+        user_id: completedCandy_dto.user_id,
+        reward_completed_at: {
+          $lt: new Date(Date.UTC(today.getFullYear(), 10, 1, 0, 0, 0)),
+          $gte: new Date(Date.UTC(today.getFullYear(), 9, 1, 0, 0, 0)),
+        },
+      })
+        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
+        .sort({ reward_completed_at: -1 });
+
+      const nov_candy = await Candy.find({
+        user_id: completedCandy_dto.user_id,
+        reward_completed_at: {
+          $lt: new Date(Date.UTC(today.getFullYear(), 11, 1, 0, 0, 0)),
+          $gte: new Date(Date.UTC(today.getFullYear(), 10, 1, 0, 0, 0)),
+        },
+      })
+        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
+        .sort({ reward_completed_at: -1 });
+
+      const dec_candy = await Candy.find({
+        user_id: completedCandy_dto.user_id,
+        reward_completed_at: {
+          $lt: new Date(Date.UTC(today.getFullYear(), 12, 1, 0, 0, 0)),
+          $gte: new Date(Date.UTC(today.getFullYear(), 11, 1, 0, 0, 0)),
+        },
+      })
+        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
+        .sort({ reward_completed_at: -1 });
+
+      let category_num = [];
+
+      const candies = await {
+        1: january_candy.map((v) => {
+          return {
+            candy_id: v._id,
+            candy_image_url: v.candy_image_url,
+            candy_name: v.name,
+            category_image_url: v.category_id['category_image_url'],
+            category_name: v.category_id['name'],
+            year: v.reward_completed_at.getFullYear(),
+            month: v.reward_completed_at.getMonth() + 1,
+            date: v.reward_completed_at.getDate(),
+          };
+        }),
+        2: february_candy.map((v) => {
+          return {
+            candy_id: v._id,
+            candy_image_url: v.candy_image_url,
+            candy_name: v.name,
+            category_image_url: v.category_id['category_image_url'],
+            category_name: v.category_id['name'],
+            year: v.reward_completed_at.getFullYear(),
+            month: v.reward_completed_at.getMonth() + 1,
+            date: v.reward_completed_at.getDate(),
+          };
+        }),
+        3: march_candy.map((v) => {
+          return {
+            candy_id: v._id,
+            candy_image_url: v.candy_image_url,
+            candy_name: v.name,
+            category_image_url: v.category_id['category_image_url'],
+            category_name: v.category_id['name'],
+            year: v.reward_completed_at.getFullYear(),
+            month: v.reward_completed_at.getMonth() + 1,
+            date: v.reward_completed_at.getDate(),
+          };
+        }),
+        4: april_candy.map((v) => {
+          return {
+            candy_id: v._id,
+            candy_image_url: v.candy_image_url,
+            candy_name: v.name,
+            category_image_url: v.category_id['category_image_url'],
+            category_name: v.category_id['name'],
+            year: v.reward_completed_at.getFullYear(),
+            month: v.reward_completed_at.getMonth() + 1,
+            date: v.reward_completed_at.getDate(),
+          };
+        }),
+        5: may_candy.map((v) => {
+          return {
+            candy_id: v._id,
+            candy_image_url: v.candy_image_url,
+            candy_name: v.name,
+            category_image_url: v.category_id['category_image_url'],
+            category_name: v.category_id['name'],
+            year: v.reward_completed_at.getFullYear(),
+            month: v.reward_completed_at.getMonth() + 1,
+            date: v.reward_completed_at.getDate(),
+          };
+        }),
+        6: june_candy.map((v) => {
+          return {
+            candy_id: v._id,
+            candy_image_url: v.candy_image_url,
+            candy_name: v.name,
+            category_image_url: v.category_id['category_image_url'],
+            category_name: v.category_id['name'],
+            year: v.reward_completed_at.getFullYear(),
+            month: v.reward_completed_at.getMonth() + 1,
+            date: v.reward_completed_at.getDate(),
+          };
+        }),
+        7: july_candy.map((v) => {
+          return {
+            candy_id: v._id,
+            candy_image_url: v.candy_image_url,
+            candy_name: v.name,
+            category_image_url: v.category_id['category_image_url'],
+            category_name: v.category_id['name'],
+            year: v.reward_completed_at.getFullYear(),
+            month: v.reward_completed_at.getMonth() + 1,
+            date: v.reward_completed_at.getDate(),
+          };
+        }),
+        8: august_candy.map((v) => {
+          return {
+            candy_id: v._id,
+            candy_image_url: v.candy_image_url,
+            candy_name: v.name,
+            category_image_url: v.category_id['category_image_url'],
+            category_name: v.category_id['name'],
+            year: v.reward_completed_at.getFullYear(),
+            month: v.reward_completed_at.getMonth() + 1,
+            date: v.reward_completed_at.getDate(),
+          };
+        }),
+        9: sep_candy.map((v) => {
+          return {
+            candy_id: v._id,
+            candy_image_url: v.candy_image_url,
+            candy_name: v.name,
+            category_image_url: v.category_id['category_image_url'],
+            category_name: v.category_id['name'],
+            year: v.reward_completed_at.getFullYear(),
+            month: v.reward_completed_at.getMonth() + 1,
+            date: v.reward_completed_at.getDate(),
+          };
+        }),
+        10: oct_candy.map((v) => {
+          return {
+            candy_id: v._id,
+            candy_image_url: v.candy_image_url,
+            candy_name: v.name,
+            category_image_url: v.category_id['category_image_url'],
+            category_name: v.category_id['name'],
+            year: v.reward_completed_at.getFullYear(),
+            month: v.reward_completed_at.getMonth() + 1,
+            date: v.reward_completed_at.getDate(),
+          };
+        }),
+        11: nov_candy.map((v) => {
+          return {
+            candy_id: v._id,
+            candy_image_url: v.candy_image_url,
+            candy_name: v.name,
+            category_image_url: v.category_id['category_image_url'],
+            category_name: v.category_id['name'],
+            year: v.reward_completed_at.getFullYear(),
+            month: v.reward_completed_at.getMonth() + 1,
+            date: v.reward_completed_at.getDate(),
+          };
+        }),
+        12: dec_candy.map((v) => {
+          return {
+            candy_id: v._id,
+            candy_image_url: v.candy_image_url,
+            candy_name: v.name,
+            category_image_url: v.category_id['category_image_url'],
+            category_name: v.category_id['name'],
+            year: v.reward_completed_at.getFullYear(),
+            month: v.reward_completed_at.getMonth() + 1,
+            date: v.reward_completed_at.getDate(),
+          };
         }),
       };
 
-      const after_candies = await Candy.find({
-        user_id: completedCandy_dto.user_id,
-        reward_completed_at: {
-          $lt: new Date(Date.UTC(today.getFullYear(), today.getMonth() + 2, 1, 0, 0, 0)),
-          $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth() + 1, 1, 0, 0, 0)),
-        },
-      }).populate('category_id', { category_image_url: 1, _id: 0 });
-
-      if (after_candies.length <= 9) end = after_candies.length;
-      else end = 9;
-      const after_categoris = await {
-        category_image_url: after_candies.slice(0, end).map((v) => {
-          return v.category_id['category_image_url'];
-        }),
-      };
-
-      let candy_array = [];
-      let cur_categories = [];
-      for (const candy of candies) {
-        let data = { candy_id: candy['_id'], candy_image_url: candy['candy_image_url'], candy_name: candy['name'] };
-        let category_id = await candy['category_id'];
-        let category = await Category.findById(category_id);
-
-        data['category_image_url'] = category['category_image_url'];
-        data['category_name'] = category['name'];
-        data['year'] = candy['reward_completed_at'].getFullYear();
-        data['month'] = candy['reward_completed_at'].getMonth() + 1;
-        data['date'] = candy['reward_completed_at'].getDate();
-        if (cur_categories.length < 9) cur_categories.push(category['category_image_url']);
-        candy_array.push(data);
+      for (let step = 1; step <= 12; step++) {
+        let data = candies[String(step)];
+        let categories = [];
+        for (let i = 0; i < data.length; i++) {
+          categories.push(data[i]['category_image_url']);
+        }
+        category_num.push(new Set(categories).size);
       }
-
       const result = await {
+        category_num: category_num,
         user_nickname: user_nickname['nickname'],
-        month: completedCandy_dto.month,
-        candy_count: candies.length,
-        cur_categories: cur_categories,
-        before_categoris: before_categoris['category_image_url'],
-        after_categoris: after_categoris['category_image_url'],
-        completed_candy: candy_array,
+        monthly_candies: candies,
       };
 
       return result;
@@ -298,11 +515,11 @@ export class CandiesService {
       const { review_id, candy_name, feeling, message } = modifyCompletedCandy_dto;
 
       const review = await Review.findById(review_id);
-      const candy = await Candy.findById(review['candy_id']);
-
       if (!review) {
         return { message: 'Review not found' };
       }
+      const candy = await Candy.findById(review['candy_id']);
+
       if (candy.user_id.toString() !== modifyCompletedCandy_dto.user_id.toString()) {
         return { message: 'User not Authorized' };
       }
@@ -348,6 +565,9 @@ export class CandiesService {
       return result;
     } catch (err) {
       console.error(err.message);
+      if (err.kind === 'ObjectId') {
+        return { message: 'Candy not found' };
+      }
       return {
         message: 'Server Error',
       };
@@ -358,6 +578,9 @@ export class CandiesService {
     try {
       const today = new Date();
       const candy = await Candy.findById(review_dto.candy_id);
+      if (!candy) {
+        return { message: 'Candy not found' };
+      }
       const category = await Category.findById(candy['category_id']);
 
       const newReview = new Review({
@@ -377,6 +600,9 @@ export class CandiesService {
       const result = category['category_image_url'];
       return result;
     } catch (err) {
+      if (err.kind === 'ObjectId') {
+        return { message: 'Candy not found' };
+      }
       console.error(err.message);
       return {
         message: 'Server Error',
@@ -387,13 +613,16 @@ export class CandiesService {
   static async detailCompletedCandies(detailCompletedCandies_dto: candyDto) {
     try {
       const candy = await Candy.findById(detailCompletedCandies_dto.candy_id);
-      const category = await Category.findById(candy['category_id']);
-      const review = await Review.findOne({ candy_id: detailCompletedCandies_dto.candy_id });
-      const feeling = await Feeling.findById(review['feeling']);
-
       if (!candy) {
         return { message: 'Candy not found' };
       }
+      const category = await Category.findById(candy['category_id']);
+      const review = await Review.findOne({ candy_id: detailCompletedCandies_dto.candy_id });
+      if (!review) {
+        return { message: 'Review not found' };
+      }
+      const feeling = await Feeling.findById(review['feeling']);
+
       if (candy.user_id.toString() !== detailCompletedCandies_dto.user_id.toString()) {
         return { message: 'User not Authorized' };
       }
@@ -410,10 +639,14 @@ export class CandiesService {
         message: candy['message'],
         candy_history: review['message'],
         review_id: review['_id'],
+        banner: category['category_image_url'],
       };
 
       return result;
     } catch (err) {
+      if (err.kind === 'ObjectId') {
+        return { message: 'Candy not found' };
+      }
       console.error(err.message);
       return {
         message: 'Server Error',
@@ -444,6 +677,9 @@ export class CandiesService {
       const result = '담은 캔디 수정이 완료되었습니다.';
       return result;
     } catch (err) {
+      if (err.kind === 'ObjectId') {
+        return { message: 'Candy not found' };
+      }
       console.error(err.message);
       return {
         message: 'Server Error',
@@ -470,6 +706,9 @@ export class CandiesService {
 
       return result;
     } catch (err) {
+      if (err.kind === 'ObjectId') {
+        return { message: 'Candy not found' };
+      }
       console.error(err.message);
       return {
         message: 'Server Error',
