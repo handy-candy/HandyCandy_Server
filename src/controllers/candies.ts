@@ -89,7 +89,6 @@ export const addDateCandy = async (req: Request, res: Response) => {
 export const completedCandy = async (req: Request, res: Response) => {
   const completedCandy_dto: completedCandyDto = {
     user_id: req.body.user.id,
-    month: req.params.month,
   };
 
   const result = await CandiesService.completedCandy(completedCandy_dto);

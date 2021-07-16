@@ -29,7 +29,6 @@ export interface addDateCandyDto {
 
 export interface completedCandyDto {
   user_id: mongoose.Types.ObjectId;
-  month: number;
 }
 
 export interface modifyCompletedCandyDto {
