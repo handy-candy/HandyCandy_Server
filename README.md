@@ -318,4 +318,4 @@ git rebase --continue (다 반영했으면 다음 conflict로 넘어감)
 
 # 🗃 Server Architecture
 
-![Desktop - 1](https://user-images.githubusercontent.com/57944153/124598335-7344ff00-de9f-11eb-9acf-2602d81126f8.png)
+![Desktop - 1](https://user-images.githubusercontent.com/61292867/125941465-e9180acd-99f4-4998-924c-33aae34b2666.png)
