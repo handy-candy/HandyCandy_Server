@@ -16,7 +16,14 @@
 
 > 내 손 안의 달콤한 보상, HANDY-CANDY
 
-![Desktop - 1](https://user-images.githubusercontent.com/57944153/123970621-3d61cf80-d9f4-11eb-90db-2ad8f549354f.png)
+# ✨ Base URL
+### https://handycandy.cf
+
+<br>
+
+# 🗃 Server Architecture
+
+![image](https://user-images.githubusercontent.com/58697091/125952504-b70023ea-0736-41a2-99e3-d7dbb7c3a97a.png)
 
 # 🛠 개발 환경
 
@@ -26,7 +33,17 @@
 ![img](https://img.shields.io/badge/commitlint-12.1.4-black)
 ![img](https://img.shields.io/badge/prettier-2.3.2-red)
 ![img](https://img.shields.io/badge/husky-7.0.0-yellow)
+![img](https://img.shields.io/badge/nginx-green)
+![img](https://img.shields.io/badge/docker-blue)
 
+
+# 📧API 명세서
+
+[API 명세서 링크](https://www.notion.so/Dev-Wiki-80bcbd2e849c4b7cb53db0c358e06364)
+
+<br>
+
+![Desktop - 1](https://user-images.githubusercontent.com/57944153/123970621-3d61cf80-d9f4-11eb-90db-2ad8f549354f.png)
 # 📜 Coding Convention
 
 ### 📂 폴더구조
@@ -41,6 +58,11 @@
   - jobs
   - services
   - controllers
+- Dockerfile
+- eslint
+- prettierrc
+- commitlint
+- tsconfig
 
 ### **🖋 네이밍**
 
@@ -58,7 +80,7 @@
 나쁜 예 >
 
 ```typescript
-class handycandy {}
+  class handycandy {}
 ```
 
 **함수 & 변수 & 인스턴스**
@@ -84,6 +106,8 @@ if (condition) {
   */
 }
 ```
+
+<br>
 
 # ✉️ Commit Messge Rules
 
@@ -138,6 +162,10 @@ if (condition) {
   test code 작성,
   test: test code 작성
 ```
+
+
+<br>
+
 
 ## **💻 Github mangement**
 
@@ -262,6 +290,9 @@ git status
 git rebase --continue (다 반영했으면 다음 conflict로 넘어감)
 ```
 
+<br>
+
+
 ## 🏹 Dependencies module
 
 ```json
@@ -272,14 +303,17 @@ git rebase --continue (다 반영했으면 다음 conflict로 넘어감)
   "main": "index.js",
   "scripts": {
     "dev": "ts-node src",
+    "start": "tsc && node dist",
     "build": "tsc && node dist",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "husky install"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@commitlint/cli": "^12.1.4",
     "@commitlint/config-conventional": "^12.1.4",
+    "@types/cors": "^2.8.12",
     "@types/node": "^15.12.5",
     "@typescript-eslint/eslint-plugin": "^4.28.1",
     "@typescript-eslint/parser": "^4.28.1",
@@ -295,27 +329,36 @@ git rebase --continue (다 반영했으면 다음 conflict로 넘어감)
     "typescript": "^4.3.4"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "mongoose": "^5.12.15"
+    "express-validator": "^6.12.0",
+    "gravatar": "^1.8.1",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.33",
+    "mongoose": "^5.12.15",
+    "nodemailer": "^6.6.2",
+    "nodemailer-smtp-transport": "^2.7.4"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
   "lint-staged": {
     "**/*.{js,ts}": "eslint"
   }
 }
+
 ```
 
-# 📧API 명세서
-
-[API 명세서 링크](https://www.notion.so/Dev-Wiki-80bcbd2e849c4b7cb53db0c358e06364)
-
-
-
-# 🗃 Server Architecture
-
-![Desktop - 1](https://user-images.githubusercontent.com/61292867/125941465-e9180acd-99f4-4998-924c-33aae34b2666.png)
+<br>
