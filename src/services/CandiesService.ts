@@ -652,6 +652,7 @@ export class CandiesService {
         candy_history: review['message'],
         review_id: review['_id'],
         banner: category['category_image_url'],
+        shopping_link: candy['shopping_link'],
       };
 
       return result;
