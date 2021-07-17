@@ -591,6 +591,7 @@ export class CandiesService {
       }
       const category = await Category.findById(candy['category_id']);
       const result = await {
+        candy_image_url: candy['candy_image_url'],
         category_name: category['name'],
         candy_name: candy['name'],
         detail_info: candy['detail_info'],
