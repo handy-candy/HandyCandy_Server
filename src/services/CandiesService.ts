@@ -23,9 +23,7 @@ export class CandiesService {
         user_id: user_dto.user_id,
         reward_planned_at: { $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth(), 1, 0, 0, 0)) },
         reward_completed_at: { $lte: new Date(Date.UTC(1111, 10, 13, 0, 0, 0)) },
-      })
-        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
-        .sort({ reward_planned_at: 1 });
+      }).sort({ reward_planned_at: 1 });
 
       /*
       const candy_array = await {
@@ -84,7 +82,7 @@ export class CandiesService {
 
       const result = await {
         comming_candy_count: candies.length,
-        comming_candy: candy_array['coming_candy'],
+        comming_candy: candy_array,
       };
       return result;
     } catch (err) {
