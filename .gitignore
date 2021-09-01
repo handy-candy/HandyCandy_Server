@@ -25,3 +25,4 @@ yarn.lock
 /.husky
 .env
 /dist
+aws.config.json

@@ -14,6 +14,7 @@ import Category from '../models/Category';
 import Review from '../models/Review';
 import User from '../models/User';
 import Feeling from '../models/Feeling';
+import fetch from 'node-fetch-npm';
 
 export class CandiesService {
   static async comingCandy(user_dto: userDto) {
@@ -729,7 +730,11 @@ export class CandiesService {
   static async modifyImage(modifyImage_dto: moidfyImageDto) {
     try {
       const candy = await Candy.findById(modifyImage_dto.candy_id);
+      const AWS = require('aws-sdk');
+      const fs = require('fs');
 
+      AWS.config.loadFromPath('aws.config.json');
+      const s3 = new AWS.S3();
       if (!candy) {
         return { message: 'Review not found' };
       }
@@ -737,11 +742,48 @@ export class CandiesService {
         return { message: 'User not Authorized' };
       }
 
-      candy['candy_image_url'] = modifyImage_dto.candy_image_url;
+      let result = '캔디 이미지가 수정되었습니다.';
+      let url = '';
+      if (candy['candy_image_url'].length) {
+        const bucket_key = candy['candy_image_url'].slice(-16);
+        s3.deleteObject(
+          {
+            Bucket: 'sopt-join-seminar',
+            Key: bucket_key,
+          },
+          (error, data) => {
+            if (error) {
+              console.log('Delete s3 error', error);
+              result = 'Server Error';
+              return result;
+            }
+          },
+        );
+      }
 
-      await candy.save();
-
-      const result = '캔디 이미지가 수정되었습니다.';
+      new Promise((resolve, reject) => {
+        fetch(modifyImage_dto.candy_image_url).then((res) => {
+          res.body.pipe(fs.createWriteStream('temp.jpg')).on('finish', (data) => {
+            const param = {
+              Bucket: 'sopt-join-seminar',
+              Key: (Math.floor(Math.random() * 1000).toString() + Date.now()).toString(),
+              ACL: 'public-read',
+              Body: fs.createReadStream('temp.jpg'),
+              ContentType: 'image/jpg',
+            };
+            s3.upload(param, async (error, data) => {
+              if (error) {
+                console.log('Upload s3 error', error);
+                result = 'Server Error';
+                return result;
+              }
+              url = data['Location'];
+              candy['candy_image_url'] = url;
+              await candy.save();
+            });
+          });
+        });
+      });
 
       return result;
     } catch (err) {
