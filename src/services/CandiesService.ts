@@ -19,7 +19,7 @@ import fetch from 'node-fetch-npm';
 export class CandiesService {
   static async comingCandy(user_dto: userDto) {
     try {
-      const today = new Date(Date.UTC(2021, 6, 17, 0, 0, 0));
+      const today = new Date();
       const candies = await Candy.find({
         user_id: user_dto.user_id,
         reward_planned_at: { $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth(), 1, 0, 0, 0)) },
@@ -96,7 +96,7 @@ export class CandiesService {
 
   static async waitingCandy(user_dto: userDto) {
     try {
-      const today = new Date(Date.UTC(2021, 6, 17, 0, 0, 0));
+      const today = new Date();
       const candies = await Candy.find({
         user_id: user_dto.user_id,
         reward_planned_at: { $lte: new Date(Date.UTC(1111, 10, 13, 0, 0, 0)) },
@@ -255,7 +255,7 @@ export class CandiesService {
 
   static async completedCandy(completedCandy_dto: completedCandyDto) {
     try {
-      const today = new Date(Date.UTC(2021, 6, 17, 0, 0, 0));
+      const today = new Date();
       const user_nickname = await User.findById(completedCandy_dto.user_id).select({ nickname: 1, _id: 0 });
       const january_candy = await Candy.find({
         user_id: completedCandy_dto.user_id,
