@@ -753,7 +753,6 @@ export class CandiesService {
           },
           (error, data) => {
             if (error) {
-              console.log('Delete s3 error', error);
               result = 'Server Error';
               return result;
             }
@@ -773,7 +772,6 @@ export class CandiesService {
             };
             s3.upload(param, async (error, data) => {
               if (error) {
-                console.log('Upload s3 error', error);
                 result = 'Server Error';
                 return result;
               }
@@ -790,7 +788,6 @@ export class CandiesService {
       if (err.kind === 'ObjectId') {
         return { message: 'Candy not found' };
       }
-      console.error(err.message);
       return {
         message: 'Server Error',
       };
