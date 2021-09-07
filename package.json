@@ -46,9 +46,7 @@
     "mongoose": "^5.12.15",
     "node-fetch-npm": "^2.0.4",
     "nodemailer": "^6.6.2",
-    "nodemailer-smtp-transport": "^2.7.4",
-    "parcel": "^2.0.0-rc.0",
-    "rxjs": "^7.3.0"
+    "nodemailer-smtp-transport": "^2.7.4"
   },
   "husky": {
     "hooks": {
