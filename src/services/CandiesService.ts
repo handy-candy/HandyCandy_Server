@@ -59,12 +59,13 @@ export class CandiesService {
         const category_id = await candy['category_id'];
         const category = await Category.findById(category_id);
         const planned_date = candy['reward_planned_at'];
+        const day = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0));
         let d_day;
-        if (planned_date.getTime() - today.getTime() < 0) {
-          d_day = Math.floor((today.getTime() - planned_date.getTime()) / (1000 * 3600 * 24));
+        if (planned_date.getTime() - day.getTime() < 0) {
+          d_day = Math.floor((day.getTime() - planned_date.getTime()) / (1000 * 3600 * 24));
           d_day *= -1;
         } else {
-          d_day = Math.floor((planned_date.getTime() - today.getTime()) / (1000 * 3600 * 24));
+          d_day = Math.floor((planned_date.getTime() - day.getTime()) / (1000 * 3600 * 24));
         }
 
         data['category_image_url'] = category['category_image_url'];
@@ -97,6 +98,7 @@ export class CandiesService {
   static async waitingCandy(user_dto: userDto) {
     try {
       const today = new Date();
+      const day = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0));
       const candies = await Candy.find({
         user_id: user_dto.user_id,
         reward_planned_at: { $lte: new Date(Date.UTC(1111, 10, 13, 0, 0, 0)) },
@@ -113,7 +115,7 @@ export class CandiesService {
             candy_image_url: v.candy_image_url,
             candy_name: v.name,
             category_image_url: v.category_id['category_image_url'],
-            waiting_date: Math.floor(Math.abs(today.getTime() - created_date.getTime()) / (1000 * 3600 * 24)),
+            waiting_date: Math.floor(Math.abs(day.getTime() - created_date.getTime()) / (1000 * 3600 * 24)),
             category_name: v.category_id['name'],
           };
         }),

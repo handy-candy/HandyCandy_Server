@@ -33,8 +33,8 @@ router.get('/', auth, async (req: Request, res: Response) => {
       const comming_candies = await Candy.find({
         user_id: req.body.user.id,
         reward_planned_at: {
-          $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth(), 17, 0, 0, 0, 0)),
-          $lt: new Date(Date.UTC(today.getFullYear(), today.getMonth(), 18, 0, 0, 0, 0)),
+          $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0)),
+          $lt: new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate() + 1, 0, 0, 0, 0)),
         },
       });
 
@@ -110,7 +110,7 @@ router.get('/', auth, async (req: Request, res: Response) => {
         user_nickname: user_nickname['nickname'],
         candy_count_phrase: candy_count_phrase,
         month: month,
-        date: 17,
+        date: date,
         phrase: phrase,
         banner: banner,
       },
