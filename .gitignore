@@ -26,3 +26,4 @@ yarn.lock
 .env
 /dist
 aws.config.json
+temp.jpg

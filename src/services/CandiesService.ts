@@ -15,6 +15,8 @@ import Review from '../models/Review';
 import User from '../models/User';
 import Feeling from '../models/Feeling';
 import fetch from 'node-fetch-npm';
+import axios from 'axios';
+import * as cheerio from 'cheerio';
 
 export class CandiesService {
   static async comingCandy(user_dto: userDto) {
@@ -88,7 +90,6 @@ export class CandiesService {
       };
       return result;
     } catch (err) {
-      console.error(err.message);
       return {
         message: 'Server Error',
       };
@@ -127,7 +128,6 @@ export class CandiesService {
       };
       return result;
     } catch (err) {
-      console.error(err.message);
       return {
         message: 'Server Error',
       };
@@ -157,7 +157,6 @@ export class CandiesService {
       if (err.kind === 'ObjectId') {
         return { message: 'Candy not found' };
       }
-      console.error(err.message);
       return {
         message: 'Server Error',
       };
@@ -186,7 +185,6 @@ export class CandiesService {
 
       return result;
     } catch (err) {
-      console.error(err.message);
       return {
         message: 'Server Error',
       };
@@ -221,7 +219,6 @@ export class CandiesService {
       };
       return result;
     } catch (err) {
-      console.error(err.message);
       return { message: 'Server Error' };
     }
   }
@@ -544,7 +541,6 @@ export class CandiesService {
 
       return result;
     } catch (err) {
-      console.error(err.message);
       return {
         message: 'Server Error',
       };
@@ -606,7 +602,6 @@ export class CandiesService {
 
       return result;
     } catch (err) {
-      console.error(err.message);
       if (err.kind === 'ObjectId') {
         return { message: 'Candy not found' };
       }
@@ -645,7 +640,6 @@ export class CandiesService {
       if (err.kind === 'ObjectId') {
         return { message: 'Candy not found' };
       }
-      console.error(err.message);
       return {
         message: 'Server Error',
       };
@@ -690,7 +684,6 @@ export class CandiesService {
       if (err.kind === 'ObjectId') {
         return { message: 'Candy not found' };
       }
-      console.error(err.message);
       return {
         message: 'Server Error',
       };
@@ -722,7 +715,6 @@ export class CandiesService {
       if (err.kind === 'ObjectId') {
         return { message: 'Candy not found' };
       }
-      console.error(err.message);
       return {
         message: 'Server Error',
       };
@@ -731,6 +723,22 @@ export class CandiesService {
 
   static async modifyImage(modifyImage_dto: moidfyImageDto) {
     try {
+      const DEFAULT_TITLE = 'title';
+      const META_TITLE = 'meta[property="og:title"]';
+      const META_URL = 'meta[property="og:url"]';
+      const META_IMAGE = 'meta[property="og:image"]';
+      const CONTENT = 'content';
+
+      const crawler = async (url: string) => {
+        const { data } = await axios(url);
+        const $ = cheerio.load(data);
+        return {
+          title: $(META_TITLE).attr(CONTENT) || $(DEFAULT_TITLE).text() || '',
+          url: $(META_URL).attr(CONTENT) || '',
+          image: $(META_IMAGE).attr(CONTENT) || '/assets/images/defaultThumbnail.svg',
+        };
+      };
+
       const candy = await Candy.findById(modifyImage_dto.candy_id);
       const AWS = require('aws-sdk');
       const fs = require('fs');
@@ -746,6 +754,8 @@ export class CandiesService {
 
       let result = '캔디 이미지가 수정되었습니다.';
       let url = '';
+      const ret = await crawler(modifyImage_dto.candy_image_url);
+
       if (candy['candy_image_url'].length) {
         const bucket_key = candy['candy_image_url'].slice(-16);
         s3.deleteObject(
@@ -763,7 +773,7 @@ export class CandiesService {
       }
 
       new Promise((resolve, reject) => {
-        fetch(modifyImage_dto.candy_image_url).then((res) => {
+        fetch(ret['image']).then((res) => {
           res.body.pipe(fs.createWriteStream('temp.jpg')).on('finish', (data) => {
             const param = {
               Bucket: 'sopt-join-seminar',
