@@ -191,9 +191,47 @@ export class CandiesService {
     }
   }
 
+  static async getImageUrl(ret: string) {
+    const AWS = require('aws-sdk');
+    const fs = require('fs');
+
+    AWS.config.loadFromPath('aws.config.json');
+    const s3 = new AWS.S3();
+
+    let url = '';
+
+    const uploadImageToS3 = (ret, fileName) => {
+      return new Promise((resolve, reject) => {
+        fetch(ret).then((res) => {
+          res.body.pipe(fs.createWriteStream('temp.jpg')).on('finish', (data) => {
+            const param = {
+              Bucket: 'sopt-join-seminar',
+              Key: (Math.floor(Math.random() * 1000).toString() + Date.now()).toString(),
+              ACL: 'public-read',
+              Body: fs.createReadStream('temp.jpg'),
+              ContentType: 'image/jpg',
+            };
+            s3.upload(param, (error, data) => {
+              if (error) {
+                return 'Server Error';
+              }
+              url = data['Location'];
+            });
+          });
+        });
+      });
+    };
+  }
+
   static async addCandy(newCandy_dto: newCandyDto) {
     try {
       const now = new Date();
+      const ret = await CandiesService.crawler(newCandy_dto.shopping_link);
+
+      let info = ret['title'];
+      if (newCandy_dto.detail_info.length) {
+        info = newCandy_dto.detail_info;
+      }
       const newCandy = new Candy({
         name: newCandy_dto.candy_name,
         shopping_link: newCandy_dto.shopping_link,
@@ -202,12 +240,40 @@ export class CandiesService {
         reward_planned_at: new Date(Date.UTC(1111, 10, 11, 0, 0, 0)),
         created_at: new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)),
         message: '',
-        detail_info: newCandy_dto.detail_info,
+        detail_info: info,
         reward_completed_at: new Date(Date.UTC(1111, 10, 11, 0, 0, 0)),
-        candy_image_url: newCandy_dto.candy_image_url,
+        candy_iamge_url: '',
       });
-
       const candy = await newCandy.save();
+      const AWS = require('aws-sdk');
+      const fs = require('fs');
+
+      AWS.config.loadFromPath('aws.config.json');
+      const s3 = new AWS.S3();
+
+      let url = '';
+
+      new Promise((resolve, reject) => {
+        fetch(ret['image']).then((res) => {
+          res.body.pipe(fs.createWriteStream('temp.jpg')).on('finish', (data) => {
+            const param = {
+              Bucket: 'sopt-join-seminar',
+              Key: (Math.floor(Math.random() * 1000).toString() + Date.now()).toString(),
+              ACL: 'public-read',
+              Body: fs.createReadStream('temp.jpg'),
+              ContentType: 'image/jpg',
+            };
+            s3.upload(param, async (error, data) => {
+              if (error) {
+                return 'Server Error';
+              }
+              url = data['Location'];
+              candy['candy_image_url'] = url;
+              await candy.save();
+            });
+          });
+        });
+      });
 
       const category = await Category.findById(newCandy_dto.category_id);
 
@@ -721,7 +787,7 @@ export class CandiesService {
     }
   }
 
-  static async modifyImage(modifyImage_dto: moidfyImageDto) {
+  static async crawler(url: string) {
     try {
       const DEFAULT_TITLE = 'title';
       const META_TITLE = 'meta[property="og:title"]';
@@ -729,16 +795,21 @@ export class CandiesService {
       const META_IMAGE = 'meta[property="og:image"]';
       const CONTENT = 'content';
 
-      const crawler = async (url: string) => {
-        const { data } = await axios(url);
-        const $ = cheerio.load(data);
-        return {
-          title: $(META_TITLE).attr(CONTENT) || $(DEFAULT_TITLE).text() || '',
-          url: $(META_URL).attr(CONTENT) || '',
-          image: $(META_IMAGE).attr(CONTENT) || '/assets/images/defaultThumbnail.svg',
-        };
+      const { data } = await axios(url);
+      const $ = cheerio.load(data);
+      return {
+        title: $(META_TITLE).attr(CONTENT) || $(DEFAULT_TITLE).text() || '',
+        url: $(META_URL).attr(CONTENT) || '',
+        image: $(META_IMAGE).attr(CONTENT) || '/assets/images/defaultThumbnail.svg',
       };
-
+    } catch (err) {
+      return {
+        message: 'Server Error',
+      };
+    }
+  }
+  static async modifyImage(modifyImage_dto: moidfyImageDto) {
+    try {
       const candy = await Candy.findById(modifyImage_dto.candy_id);
       const AWS = require('aws-sdk');
       const fs = require('fs');
@@ -754,7 +825,7 @@ export class CandiesService {
 
       let result = '캔디 이미지가 수정되었습니다.';
       let url = '';
-      const ret = await crawler(modifyImage_dto.candy_image_url);
+      const ret = await CandiesService.crawler(modifyImage_dto.candy_image_url);
 
       if (candy['candy_image_url'].length) {
         const bucket_key = candy['candy_image_url'].slice(-16);

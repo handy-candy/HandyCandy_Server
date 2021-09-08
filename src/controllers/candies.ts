@@ -59,7 +59,6 @@ export const addCandy = async (req: Request, res: Response) => {
     category_id: req.body.category_id,
     candy_name: req.body.candy_name,
     shopping_link: req.body.shopping_link,
-    candy_image_url: req.body.candy_image_url,
     detail_info: req.body.detail_info,
   };
 

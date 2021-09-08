@@ -14,7 +14,6 @@ export interface newCandyDto {
   category_id: mongoose.Types.ObjectId;
   candy_name: string;
   shopping_link: string;
-  candy_image_url: string;
   detail_info: string;
 }
 

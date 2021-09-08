@@ -26,4 +26,9 @@ yarn.lock
 .env
 /dist
 aws.config.json
-temp.jpg
+# JPEG
+*.jpg
+*.jpeg
+*.jpe
+*.jif
+*.jfif
