@@ -16,11 +16,11 @@ export class UserService {
 
       user = new User(user_dto);
 
-      await user.save();
       const salt = await bcrypt.genSalt(10);
       user.salt = salt;
       user.password = await bcrypt.hash(user_dto.password, salt);
 
+      await user.save();
       const payload = {
         user: {
           id: user.id,
