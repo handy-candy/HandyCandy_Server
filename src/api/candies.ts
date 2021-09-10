@@ -16,6 +16,7 @@ import {
   modifyImage,
 } from '../controllers';
 import auth from '../middleware/auth';
+import upload from '../middleware/upload';
 const router = Router();
 
 const check_candy = [
@@ -49,6 +50,6 @@ router.get('/completedCandy/detail/:candy_id', auth, detailCompletedCandies);
 
 router.put('/:candy_id', auth, modifyCandy);
 
-router.put('/image/:candy_id', auth, modifyImage);
+router.patch('/image/:candy_id', upload.single('candy_image_url'), auth, modifyImage);
 
 module.exports = router;

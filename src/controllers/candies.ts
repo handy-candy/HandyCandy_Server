@@ -164,7 +164,7 @@ export const modifyImage = async (req: Request, res: Response) => {
   const modifyImage_dto: moidfyImageDto = {
     user_id: req.body.user.id,
     candy_id: req.params.candy_id,
-    candy_image_url: req.body.candy_image_url,
+    candy_image_url: req.file.location,
   };
 
   const result = await CandiesService.modifyImage(modifyImage_dto);

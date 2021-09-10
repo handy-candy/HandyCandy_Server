@@ -812,7 +812,6 @@ export class CandiesService {
     try {
       const candy = await Candy.findById(modifyImage_dto.candy_id);
       const AWS = require('aws-sdk');
-      const fs = require('fs');
 
       AWS.config.loadFromPath('aws.config.json');
       const s3 = new AWS.S3();
@@ -824,8 +823,6 @@ export class CandiesService {
       }
 
       let result = '캔디 이미지가 수정되었습니다.';
-      let url = '';
-      const ret = await CandiesService.crawler(modifyImage_dto.candy_image_url);
 
       if (candy['candy_image_url'].length) {
         const bucket_key = candy['candy_image_url'].slice(-16);
@@ -843,34 +840,14 @@ export class CandiesService {
         );
       }
 
-      new Promise((resolve, reject) => {
-        fetch(ret['image']).then((res) => {
-          res.body.pipe(fs.createWriteStream('temp.jpg')).on('finish', (data) => {
-            const param = {
-              Bucket: 'sopt-join-seminar',
-              Key: (Math.floor(Math.random() * 1000).toString() + Date.now()).toString(),
-              ACL: 'public-read',
-              Body: fs.createReadStream('temp.jpg'),
-              ContentType: 'image/jpg',
-            };
-            s3.upload(param, async (error, data) => {
-              if (error) {
-                result = 'Server Error';
-                return result;
-              }
-              url = data['Location'];
-              candy['candy_image_url'] = url;
-              await candy.save();
-            });
-          });
-        });
-      });
-
-      return result;
+      candy['candy_image_url'] = modifyImage_dto.candy_image_url;
+      await candy.save();
+      return candy['candy_image_url'];
     } catch (err) {
       if (err.kind === 'ObjectId') {
         return { message: 'Candy not found' };
       }
+      console.log(err);
       return {
         message: 'Server Error',
       };

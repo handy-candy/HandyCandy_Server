@@ -46,6 +46,8 @@
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.33",
     "mongoose": "^5.12.15",
+    "multer": "^1.4.3",
+    "multer-s3": "^2.9.0",
     "node-fetch-npm": "^2.0.4",
     "nodemailer": "^6.6.2",
     "nodemailer-smtp-transport": "^2.7.4"
