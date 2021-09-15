@@ -226,12 +226,16 @@ export class CandiesService {
   static async addCandy(newCandy_dto: newCandyDto) {
     try {
       const now = new Date();
-      const ret = await CandiesService.crawler(newCandy_dto.shopping_link);
+      const AWS = require('aws-sdk');
+      const fs = require('fs');
 
-      let info = ret['title'];
-      if (newCandy_dto.detail_info.length) {
-        info = newCandy_dto.detail_info;
-      }
+      AWS.config.loadFromPath('aws.config.json');
+      const s3 = new AWS.S3();
+
+      let url = '';
+      let info = '';
+      let ret;
+
       const newCandy = new Candy({
         name: newCandy_dto.candy_name,
         shopping_link: newCandy_dto.shopping_link,
@@ -240,40 +244,46 @@ export class CandiesService {
         reward_planned_at: new Date(Date.UTC(1111, 10, 11, 0, 0, 0)),
         created_at: new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)),
         message: '',
-        detail_info: info,
+        detail_info: '',
         reward_completed_at: new Date(Date.UTC(1111, 10, 11, 0, 0, 0)),
-        candy_iamge_url: '',
+        candy_image_url: '',
       });
+
       const candy = await newCandy.save();
-      const AWS = require('aws-sdk');
-      const fs = require('fs');
 
-      AWS.config.loadFromPath('aws.config.json');
-      const s3 = new AWS.S3();
+      if (newCandy_dto.shopping_link.length) {
+        ret = await CandiesService.crawler(newCandy_dto.shopping_link);
 
-      let url = '';
+        info = ret['title'];
+        if (newCandy_dto.detail_info.length) {
+          info = newCandy_dto.detail_info;
+        }
 
-      new Promise((resolve, reject) => {
-        fetch(ret['image']).then((res) => {
-          res.body.pipe(fs.createWriteStream('temp.jpg')).on('finish', (data) => {
-            const param = {
-              Bucket: 'sopt-join-seminar',
-              Key: (Math.floor(Math.random() * 1000).toString() + Date.now()).toString(),
-              ACL: 'public-read',
-              Body: fs.createReadStream('temp.jpg'),
-              ContentType: 'image/jpg',
-            };
-            s3.upload(param, async (error, data) => {
-              if (error) {
-                return 'Server Error';
-              }
-              url = data['Location'];
-              candy['candy_image_url'] = url;
-              await candy.save();
+        if (ret['image'].length) {
+          new Promise((resolve, reject) => {
+            fetch(ret['image']).then((res) => {
+              res.body.pipe(fs.createWriteStream('temp.jpg')).on('finish', (data) => {
+                const param = {
+                  Bucket: 'sopt-join-seminar',
+                  Key: (Math.floor(Math.random() * 1000).toString() + Date.now()).toString(),
+                  ACL: 'public-read',
+                  Body: fs.createReadStream('temp.jpg'),
+                  ContentType: 'image/jpg',
+                };
+                s3.upload(param, async (error, data) => {
+                  if (error) {
+                    return 'Server Error';
+                  }
+                  url = data['Location'];
+                  candy['candy_image_url'] = url;
+                  candy['detail_info'] = info;
+                  await candy.save();
+                });
+              });
             });
           });
-        });
-      });
+        }
+      }
 
       const category = await Category.findById(newCandy_dto.category_id);
 
