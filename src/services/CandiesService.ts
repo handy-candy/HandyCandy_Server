@@ -857,7 +857,60 @@ export class CandiesService {
       if (err.kind === 'ObjectId') {
         return { message: 'Candy not found' };
       }
-      console.log(err);
+      return {
+        message: 'Server Error',
+      };
+    }
+  }
+
+  static async getAllCandies(completedCandy_dto: completedCandyDto) {
+    try {
+      const candies = await Candy.find({
+        user_id: completedCandy_dto.user_id,
+      });
+
+      const today = new Date();
+      const day = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0));
+
+      const candy_array = await {
+        result: candies.map((v) => {
+          let waiting_date = 0;
+          let month = 0;
+          let date = 0;
+          let d_day = 0;
+          if (v.reward_planned_at.getFullYear() == 1111) {
+            const created_date = v.created_at;
+            waiting_date = Math.floor(Math.abs(day.getTime() - created_date.getTime()) / (1000 * 3600 * 24));
+          } else {
+            const planned_date = v.reward_planned_at;
+            month = planned_date.getMonth() + 1;
+            date = planned_date.getDate();
+            if (planned_date.getTime() - day.getTime() < 0) {
+              d_day = Math.floor((day.getTime() - planned_date.getTime()) / (1000 * 3600 * 24));
+              d_day *= -1;
+            } else {
+              d_day = Math.floor((planned_date.getTime() - day.getTime()) / (1000 * 3600 * 24));
+            }
+          }
+          return {
+            candy_id: v._id,
+            candy_image_url: v.candy_image_url,
+            candy_name: v.name,
+            category_image_url: v.category_id['category_image_url'],
+            category_name: v.category_id['name'],
+            waiting_date: waiting_date,
+            d_day: d_day,
+            month: month,
+            date: date,
+          };
+        }),
+      };
+
+      return candy_array['result'];
+    } catch (err) {
+      if (err.kind === 'ObjectId') {
+        return { message: 'Candy not found' };
+      }
       return {
         message: 'Server Error',
       };

@@ -171,3 +171,13 @@ export const modifyImage = async (req: Request, res: Response) => {
 
   res.status(200).json({ result: result });
 };
+
+export const getAllCandies = async (req: Request, res: Response) => {
+  const completedCandy_dto: completedCandyDto = {
+    user_id: req.body.user.id,
+  };
+
+  const result = await CandiesService.getAllCandies(completedCandy_dto);
+
+  res.status(200).json({ result: result });
+};
