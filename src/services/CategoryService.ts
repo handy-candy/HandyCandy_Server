@@ -167,7 +167,7 @@ export class CategoryService {
           reward_planned_at: candy['reward_planned_at'],
         };
         let today = new Date(); // 현재 날짜
-        let d_day = Math.ceil((candy['reward_planned_at'].getTime() - today.getTime()) / (1000 * 3600 * 24));
+        let d_day = Math.floor((candy['reward_planned_at'].getTime() - today.getTime()) / (1000 * 3600 * 24));
         data['d_day'] = d_day;
         result_coming_candy_array.push(data);
       }
@@ -179,7 +179,7 @@ export class CategoryService {
           category_name: category['name'],
         };
         let today = new Date(); // 현재 날짜
-        let waiting_date = Math.ceil((today.getTime() - candy['created_at'].getTime()) / (1000 * 3600 * 24));
+        let waiting_date = Math.floor((today.getTime() - candy['created_at'].getTime()) / (1000 * 3600 * 24));
 
         data['waiting_date'] = waiting_date;
         result_waiting_candy_array.push(data);
