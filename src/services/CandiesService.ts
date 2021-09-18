@@ -288,10 +288,10 @@ export class CandiesService {
       const category = await Category.findById(newCandy_dto.category_id);
 
       const result = await {
-        candy_id: candy._id,
-        category_name: category.name,
-        candy_name: candy.name,
-        category_image_url: category.category_image_url,
+        candy_id: candy['_id'],
+        category_name: category['name'],
+        candy_name: candy['name'],
+        category_image_url: category['category_image_url'],
       };
       return result;
     } catch (err) {
