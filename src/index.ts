@@ -13,8 +13,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 // Connect Database
 connectDB();
-app.use(express.urlencoded());
-app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api', router);
