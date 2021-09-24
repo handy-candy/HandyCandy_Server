@@ -13,6 +13,11 @@ const CategorySchema = new mongoose.Schema({
   banner: {
     type: String,
   },
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
 });
 
 export default mongoose.model<ICategory & mongoose.Document>('Category', CategorySchema);

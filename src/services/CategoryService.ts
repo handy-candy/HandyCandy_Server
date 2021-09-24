@@ -6,7 +6,18 @@ import Category from '../models/Category';
 export class CategoryService {
   static async allCategory(user_dto: userDto) {
     try {
-      const category_array = await Category.find();
+      let category_array = await Category.find({ user_id: user_dto.user_id });
+      const normal = [
+        '60e2fe377056fe1264f76eed',
+        '60e301b57056fe1264f76ef1',
+        '60e301f07056fe1264f76ef3',
+        '60e3020e7056fe1264f76ef4',
+        '60eaafcb2a4d6bd0a5b684f3',
+      ];
+      for (const base of normal) {
+        let cg = await Category.findById(base);
+        category_array.push(cg);
+      }
       let result = [];
       if (category_array) {
         for (const category of category_array) {
@@ -15,7 +26,14 @@ export class CategoryService {
             name: category['name'],
             category_image_url: category['category_image_url'],
           };
-          const candy_array = await Candy.find({ category_id: category['_id'] }).sort({ date: -1 });
+          const candy_array = await Candy.find({
+            category_id: category['_id'],
+            user_id: user_dto.user_id,
+            reward_completed_at: { $lte: new Date(Date.UTC(1111, 10, 13, 0, 0, 0)) },
+          }).sort({
+            date: -1,
+          });
+
           let category_candy_count = candy_array.length;
           if (candy_array[0]) {
             let candy_created_at = candy_array[0].created_at;
@@ -92,6 +110,7 @@ export class CategoryService {
     try {
       const newCategory = new Category({
         name: newCategory_dto.name,
+        user_id: newCategory_dto.user_id,
         category_image_url: newCategory_dto.category_image_url,
       });
 
