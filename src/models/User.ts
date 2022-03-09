@@ -9,7 +9,6 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
   },
   salt: {
     type: String,
@@ -30,6 +29,13 @@ const UserSchema = new mongoose.Schema({
   },
   access_token: {
     type: String,
+  },
+  sns_id: {
+    type: String,
+  },
+  provider: {
+    type: String,
+    required: true,
   },
 });
 
