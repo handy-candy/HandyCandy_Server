@@ -803,14 +803,53 @@ export class CandiesService {
       const META_TITLE = 'meta[property="og:title"]';
       const META_URL = 'meta[property="og:url"]';
       const META_IMAGE = 'meta[property="og:image"]';
+      const META_SITE_NAME = 'meta[property="og:site_name"]';
+      const SHORTCUT_ICON = 'link[rel="shortcut icon"]';
+      const ICON = 'link[rel="icon"]';
+
       const CONTENT = 'content';
+      const HREF = 'href';
 
       const { data } = await axios(url);
       const $ = cheerio.load(data);
+
+      // 사이트 이름 찾기
+      const shopName = {
+        "gmarket": "G마켓",
+        "11st.co.kr": "11번가",
+        "coupang": "쿠팡",
+        "smartstore.naver.com": "네이버쇼핑",
+        "auction": "옥션",
+        "interpark": "인터파크",
+        "store.emart.com": "이마트",
+        "ssg.com": "SSG",
+        "lotteon.com": "롯데ON",
+        "costco": "코스트코",
+        "homeplus":"홈플러스",
+        "wemakeprice": "위메프",
+        "tmon.co.kr": "티몬",
+        "musinsa": "무신사",
+        "yes24.com": "YES24",
+        "aladin.co.kr": "알라딘",
+        "kyobobook.co.kr": "교보문고",
+        "ypbooks.co.kr": "영풍문고"
+      }
+
+      let foundSiteName = ""
+      Object.keys(shopName).forEach(element => {
+        if (url.includes(element)){
+          foundSiteName = shopName[element];
+        }
+      });
+
+      const defaultIcon = 'default icon path'
+
       return {
         title: $(META_TITLE).attr(CONTENT) || $(DEFAULT_TITLE).text() || '',
         url: $(META_URL).attr(CONTENT) || '',
         image: $(META_IMAGE).attr(CONTENT) || '/assets/images/defaultThumbnail.svg',
+        siteName: foundSiteName || $(META_SITE_NAME).attr(CONTENT) || '',
+        icon: $(SHORTCUT_ICON).attr(HREF) || $(ICON).attr(HREF) || defaultIcon,
       };
     } catch (err) {
       return {
