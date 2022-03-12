@@ -4,16 +4,12 @@ import {
   newCandyDto,
   addDateCandyDto,
   completedCandyDto,
-  modifyCompletedCandyDto,
-  reviewDto,
   modifyCandyDto,
   moidfyImageDto,
 } from '../dto/candies.dto';
 import Candy from '../models/Candy';
 import Category from '../models/Category';
-import Review from '../models/Review';
 import User from '../models/User';
-import Feeling from '../models/Feeling';
 import fetch from 'node-fetch-npm';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
@@ -96,44 +92,6 @@ export class CandiesService {
     }
   }
 
-  static async waitingCandy(user_dto: userDto) {
-    try {
-      const today = new Date();
-      const day = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0));
-      const candies = await Candy.find({
-        user_id: user_dto.user_id,
-        reward_planned_at: { $lte: new Date(Date.UTC(1111, 10, 13, 0, 0, 0)) },
-        reward_completed_at: { $lte: new Date(Date.UTC(1111, 10, 13, 0, 0, 0)) },
-      })
-        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
-        .sort({ created_at: -1 });
-
-      const candy_array = await {
-        waiting_candy: candies.map((v) => {
-          const created_date = v.created_at;
-          return {
-            candy_id: v._id,
-            candy_image_url: v.candy_image_url,
-            candy_name: v.name,
-            category_image_url: v.category_id['category_image_url'],
-            waiting_date: Math.floor(Math.abs(day.getTime() - created_date.getTime()) / (1000 * 3600 * 24)),
-            category_name: v.category_id['name'],
-          };
-        }),
-      };
-
-      const result = await {
-        waiting_candy_count: candy_array['waiting_candy'].length,
-        waiting_candy: candy_array['waiting_candy'],
-      };
-      return result;
-    } catch (err) {
-      return {
-        message: 'Server Error',
-      };
-    }
-  }
-
   static async deleteCandy(candy_dto: candyDto) {
     try {
       const candy = await Candy.findById(candy_dto.candy_id);
@@ -145,10 +103,6 @@ export class CandiesService {
       if (candy.user_id.toString() !== candy_dto.user_id.toString()) {
         return { message: 'User not Authorized' };
       }
-
-      const review = await Review.findOne({ candy_id: candy_dto.candy_id });
-      if (review) await review.remove();
-
       await candy.remove();
 
       const result = '캔디가 삭제되었습니다.';
@@ -242,9 +196,6 @@ export class CandiesService {
         user_id: newCandy_dto.user_id,
         category_id: newCandy_dto.category_id,
         reward_planned_at: new Date(Date.UTC(1111, 10, 11, 0, 0, 0)),
-        created_at: new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)),
-        message: '',
-        detail_info: '',
         reward_completed_at: new Date(Date.UTC(1111, 10, 11, 0, 0, 0)),
         candy_image_url: '',
       });
@@ -623,6 +574,7 @@ export class CandiesService {
     }
   }
 
+  /*
   static async modifyCompletedCandy(modifyCompletedCandy_dto: modifyCompletedCandyDto) {
     try {
       const { review_id, candy_name, feeling, message } = modifyCompletedCandy_dto;
@@ -653,7 +605,7 @@ export class CandiesService {
       return { message: 'Server Error' };
     }
   }
-
+*/
   static async reviewCandy(review_dto: candyDto) {
     try {
       const today = new Date();
@@ -687,41 +639,6 @@ export class CandiesService {
     }
   }
 
-  static async addReview(review_dto: reviewDto) {
-    try {
-      const today = new Date();
-      const candy = await Candy.findById(review_dto.candy_id);
-      if (!candy) {
-        return { message: 'Candy not found' };
-      }
-      const category = await Category.findById(candy['category_id']);
-
-      const newReview = new Review({
-        feeling: review_dto.feeling,
-        message: review_dto.message,
-        candy_id: review_dto.candy_id,
-        category_id: category['_id'],
-      });
-
-      candy['reward_completed_at'] = new Date(
-        Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0),
-      );
-
-      await newReview.save();
-      await candy.save();
-
-      const result = category['category_image_url'];
-      return result;
-    } catch (err) {
-      if (err.kind === 'ObjectId') {
-        return { message: 'Candy not found' };
-      }
-      return {
-        message: 'Server Error',
-      };
-    }
-  }
-
   static async detailCompletedCandies(detailCompletedCandies_dto: candyDto) {
     try {
       const candy = await Candy.findById(detailCompletedCandies_dto.candy_id);
@@ -729,11 +646,6 @@ export class CandiesService {
         return { message: 'Candy not found' };
       }
       const category = await Category.findById(candy['category_id']);
-      const review = await Review.findOne({ candy_id: detailCompletedCandies_dto.candy_id });
-      if (!review) {
-        return { message: 'Review not found' };
-      }
-      const feeling = await Feeling.findById(review['feeling']);
 
       if (candy.user_id.toString() !== detailCompletedCandies_dto.user_id.toString()) {
         return { message: 'User not Authorized' };
@@ -745,12 +657,9 @@ export class CandiesService {
         date: candy['reward_completed_at'].getDate(),
         category_name: category['name'],
         candy_name: candy['name'],
-        feeling_image_url: feeling['feeling_image_url'],
         candy_image_url: candy['candy_image_url'],
         detail_info: candy['detail_info'],
         message: candy['message'],
-        candy_history: review['message'],
-        review_id: review['_id'],
         banner: category['category_image_url'],
         shopping_link: candy['shopping_link'],
       };
@@ -815,34 +724,34 @@ export class CandiesService {
 
       // 사이트 이름 찾기
       const shopName = {
-        "gmarket": "G마켓",
-        "11st.co.kr": "11번가",
-        "coupang": "쿠팡",
-        "smartstore.naver.com": "네이버쇼핑",
-        "auction": "옥션",
-        "interpark": "인터파크",
-        "store.emart.com": "이마트",
-        "ssg.com": "SSG",
-        "lotteon.com": "롯데ON",
-        "costco": "코스트코",
-        "homeplus":"홈플러스",
-        "wemakeprice": "위메프",
-        "tmon.co.kr": "티몬",
-        "musinsa": "무신사",
-        "yes24.com": "YES24",
-        "aladin.co.kr": "알라딘",
-        "kyobobook.co.kr": "교보문고",
-        "ypbooks.co.kr": "영풍문고"
-      }
+        'gmarket': 'G마켓',
+        '11st.co.kr': '11번가',
+        'coupang': '쿠팡',
+        'smartstore.naver.com': '네이버쇼핑',
+        'auction': '옥션',
+        'interpark': '인터파크',
+        'store.emart.com': '이마트',
+        'ssg.com': 'SSG',
+        'lotteon.com': '롯데ON',
+        'costco': '코스트코',
+        'homeplus': '홈플러스',
+        'wemakeprice': '위메프',
+        'tmon.co.kr': '티몬',
+        'musinsa': '무신사',
+        'yes24.com': 'YES24',
+        'aladin.co.kr': '알라딘',
+        'kyobobook.co.kr': '교보문고',
+        'ypbooks.co.kr': '영풍문고',
+      };
 
-      let foundSiteName = ""
-      Object.keys(shopName).forEach(element => {
-        if (url.includes(element)){
+      let foundSiteName = '';
+      Object.keys(shopName).forEach((element) => {
+        if (url.includes(element)) {
           foundSiteName = shopName[element];
         }
       });
 
-      const defaultIcon = 'default icon path'
+      const defaultIcon = 'default icon path';
 
       return {
         title: $(META_TITLE).attr(CONTENT) || $(DEFAULT_TITLE).text() || '',
@@ -918,8 +827,6 @@ export class CandiesService {
           let date = 0;
           let d_day = 0;
           if (v.reward_planned_at.getFullYear() == 1111) {
-            const created_date = v.created_at;
-            waiting_date = Math.floor(Math.abs(day.getTime() - created_date.getTime()) / (1000 * 3600 * 24));
           } else {
             const planned_date = v.reward_planned_at;
             month = planned_date.getMonth() + 1;

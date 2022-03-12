@@ -23,15 +23,6 @@ export const comingCandy = async (req: Request, res: Response) => {
   res.status(200).json({ result: result });
 };
 
-export const waitingCandy = async (req: Request, res: Response) => {
-  const waitingCandy_dto: userDto = {
-    user_id: req.body.user.id,
-  };
-  const result = await CandiesService.waitingCandy(waitingCandy_dto);
-
-  res.status(200).json({ result: result });
-};
-
 export const deleteCandy = async (req: Request, res: Response) => {
   const deleteCandy_dto: candyDto = {
     user_id: req.body.user.id,
@@ -87,48 +78,6 @@ export const completedCandy = async (req: Request, res: Response) => {
   };
 
   const result = await CandiesService.completedCandy(completedCandy_dto);
-
-  res.status(200).json({ result: result });
-};
-
-export const modifyCompletedCandy = async (req: Request, res: Response) => {
-  const modifyCompletedCandy_dto: modifyCompletedCandyDto = {
-    user_id: req.body.user.id,
-    review_id: req.body.review_id,
-    candy_name: req.body.candy_name,
-    feeling: req.body.feeling,
-    message: req.body.message,
-  };
-
-  const result = await CandiesService.modifyCompletedCandy(modifyCompletedCandy_dto);
-
-  res.status(200).json({ result: result });
-};
-
-export const reviewCandy = async (req: Request, res: Response) => {
-  const reviewCandy_dto: candyDto = {
-    user_id: req.body.user.id,
-    candy_id: req.params.candy_id,
-  };
-
-  const result = await CandiesService.reviewCandy(reviewCandy_dto);
-
-  res.status(200).json({ result: result });
-};
-
-export const addReview = async (req: Request, res: Response) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ error: errors.array() });
-  }
-  const review_dto: reviewDto = {
-    user_id: req.body.user.id,
-    candy_id: req.body.candy_id,
-    feeling: req.body.feeling,
-    message: req.body.message,
-  };
-
-  const result = await CandiesService.addReview(review_dto);
 
   res.status(200).json({ result: result });
 };
