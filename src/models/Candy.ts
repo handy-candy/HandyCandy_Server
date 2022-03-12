@@ -9,14 +9,20 @@ const CandySchema = new mongoose.Schema({
   shopping_link: {
     type: String,
   },
+  shopping_link_image:{
+    type: String,
+  },
+  shopping_link_name:{
+    type: String,
+  },
+  price:{
+    type: String,
+  },
   candy_image_url: {
     type: String,
   },
   reward_planned_at: {
     type: Date,
-  },
-  message: {
-    type: String,
   },
   reward_completed_at: {
     type: Date,
@@ -30,13 +36,6 @@ const CandySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
     required: true,
-  },
-  created_at: {
-    type: Date,
-    default: Date.now,
-  },
-  detail_info: {
-    type: String,
   },
 });
 

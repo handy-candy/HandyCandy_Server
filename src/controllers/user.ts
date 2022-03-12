@@ -16,9 +16,11 @@ export const signUp = async (req: Request, res: Response) => {
     gender: req.body.gender,
     birth: req.body.birth,
     notice_agreement: req.body.notice_agreement,
+    provider: req.body.provider,
   };
 
   const result = await UserService.signUp(signup_dto);
+
   if (result.message === 'User already exists') {
     return res.status(400).json({ errors: [{ msg: 'User already exists' }] });
   } else if (result.message === 'Server Error') {
@@ -62,6 +64,7 @@ export const google_signUp = async (req: Request, res: Response) => {
     gender: req.body.gender,
     birth: req.body.birth,
     notice_agreement: req.body.notice_agreement,
+    provider: req.body.provider,
   };
 
   const result = await UserService.signUp(signup_dto);

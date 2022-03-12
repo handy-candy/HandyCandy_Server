@@ -1,7 +1,7 @@
 {
   "name": "handycandy",
   "version": "1.0.0",
-  "description": "",
+  "description": "![img](<https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F23f4183d-c084-4f28-864c-6055a1a20fa0%2F___(5).png?table=block&id=7c43a727-0962-4c7f-ad67-1a6f9dece6ae&spaceId=cc4e63fe-9341-442b-823d-efdb19e51566&width=3070&userId=898bd393-2284-49ba-adb6-daa3f952d4b0&cache=v2>)",
   "main": "index.js",
   "scripts": {
     "dev": "ts-node src",
@@ -16,7 +16,7 @@
     "@commitlint/cli": "^12.1.4",
     "@commitlint/config-conventional": "^12.1.4",
     "@types/cors": "^2.8.12",
-    "@types/node": "^15.12.5",
+    "@types/node": "^17.0.21",
     "@typescript-eslint/eslint-plugin": "^4.28.1",
     "@typescript-eslint/parser": "^4.28.1",
     "eslint": "^7.29.0",
@@ -27,8 +27,8 @@
     "husky": "^7.0.0",
     "lint-staged": "^11.0.0",
     "prettier": "2.3.2",
-    "ts-node": "^10.0.0",
-    "typescript": "^4.3.4"
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.2"
   },
   "dependencies": {
     "aws-sdk": "^2.980.0",
@@ -70,5 +70,13 @@
   },
   "lint-staged": {
     "**/*.{js,ts}": "eslint"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/handy-candy/HandyCandy_Server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/handy-candy/HandyCandy_Server/issues"
+  },
+  "homepage": "https://github.com/handy-candy/HandyCandy_Server#readme"
 }

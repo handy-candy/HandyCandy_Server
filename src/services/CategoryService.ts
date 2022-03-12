@@ -6,68 +6,29 @@ import Category from '../models/Category';
 export class CategoryService {
   static async allCategory(user_dto: userDto) {
     try {
-      let category_array = await Category.find({ user_id: user_dto.user_id });
-      const normal = [
-        '60e2fe377056fe1264f76eed',
-        '60e301b57056fe1264f76ef1',
-        '60e301f07056fe1264f76ef3',
-        '60e3020e7056fe1264f76ef4',
-        '60eaafcb2a4d6bd0a5b684f3',
-      ];
-      for (const base of normal) {
-        let cg = await Category.findById(base);
-        category_array.push(cg);
-      }
-      let result = [];
-      if (category_array) {
-        for (const category of category_array) {
-          let data = {
-            category_id: category['_id'],
-            name: category['name'],
-            category_image_url: category['category_image_url'],
-          };
-          const candy_array = await Candy.find({
-            category_id: category['_id'],
-            user_id: user_dto.user_id,
-            reward_completed_at: { $lte: new Date(Date.UTC(1111, 10, 13, 0, 0, 0)) },
-          }).sort({
-            date: -1,
-          });
+      const candyList = await Candy.find({ user_id: user_dto.user_id })
+        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
+        .sort({ reward_planned_at: 1 });
 
-          let category_candy_count = candy_array.length;
-          if (candy_array[0]) {
-            let candy_created_at = candy_array[0].created_at;
-            let image_url_one = candy_array[0].candy_image_url;
-            let image_url_two = '';
-            let image_url_three = '';
-            if (candy_array[1]) {
-              image_url_two = candy_array[1].candy_image_url;
-            }
-            if (candy_array[2]) {
-              image_url_three = candy_array[2].candy_image_url;
-            }
+      const today = new Date();
+      const result = candyList.map((item) => {
+        const planned_date = item.reward_planned_at;
+        const d_day = Math.floor((today.getTime() - planned_date.getTime()) / (1000 * 3600 * 24));
 
-            let today = new Date();
-            let recent_update_date = Math.ceil((today.getTime() - candy_created_at.getTime()) / (1000 * 3600 * 24));
-            data['category_candy_count'] = category_candy_count;
-            data['recent_update_date'] = recent_update_date;
-            data['image_url_one'] = image_url_one;
-            data['image_url_two'] = image_url_two;
-            data['image_url_three'] = image_url_three;
-            result.push(data);
-          } else {
-            data['category_candy_count'] = '0';
-            data['recent_update_date'] = '0';
-            data['image_url'] = '';
-            result.push(data);
-          }
-        }
-        return result;
-      } else {
         return {
-          message: 'Error : 404 Not Found',
+          candy_id: item._id,
+          candy_image_url: item.candy_image_url,
+          candy_name: item.name,
+          category_image_url: item.category_id['category_image_url'],
+          d_day: d_day,
+          category_name: item.category_id['name'],
+          reward_planned_at: item.reward_planned_at,
+          shopping_link_image: item.shopping_link_image,
+          shopping_link_name: item.shopping_link_name,
         };
-      }
+      });
+
+      return result;
     } catch (err) {
       console.error(err.message);
       return {

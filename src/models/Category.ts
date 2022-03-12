@@ -10,9 +10,6 @@ const CategorySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  banner: {
-    type: String,
-  },
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

@@ -5,6 +5,7 @@ export interface SignUpDto {
   gender: number;
   birth: number;
   notice_agreement: boolean;
+  provider: string;
 }
 
 export interface SignUpResultDto {

@@ -7,4 +7,5 @@ export interface IUser {
   birth: number;
   notice_agreement?: boolean;
   access_token?: string;
+  provider?: string;
 }
