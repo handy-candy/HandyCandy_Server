@@ -47,3 +47,29 @@ export const signIn = async (req: Request, res: Response) => {
     res.status(200).json({ token: result });
   }
 };
+
+// 구글 소셜로그인 회원가입
+export const google_signUp = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const signup_dto: SignUpDto = {
+    email: req.body.email,
+    password: req.body.password,
+    nickname: req.body.nickname,
+    gender: req.body.gender,
+    birth: req.body.birth,
+    notice_agreement: req.body.notice_agreement,
+  };
+
+  const result = await UserService.signUp(signup_dto);
+  if (result.message === 'User already exists') {
+    return res.status(400).json({ errors: [{ msg: 'User already exists' }] });
+  } else if (result.message === 'Server Error') {
+    res.status(500).send('Server Error');
+  } else {
+    res.status(200).json({ token: result });
+  }
+};
