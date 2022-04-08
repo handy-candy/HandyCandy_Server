@@ -22,7 +22,6 @@ const UserSchema = new mongoose.Schema({
   },
   birth: {
     type: Number,
-    required: true,
   },
   notice_agreement: {
     type: Boolean,
@@ -35,7 +34,6 @@ const UserSchema = new mongoose.Schema({
   },
   provider: {
     type: String,
-    required: true,
   },
 });
 
