@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import { SignInDto, SignUpDto } from '../dto/user.dto';
+import { SignInDto, SignUpDto, GoogleSignInDto  } from '../dto/user.dto';
 import { UserService } from '../services';
 
 export const signUp = async (req: Request, res: Response) => {
@@ -49,27 +49,44 @@ export const signIn = async (req: Request, res: Response) => {
 };
 
 // 구글 소셜로그인 회원가입
-export const google_signUp = async (req: Request, res: Response) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+export const googleLoginInfo = async (req: Request, res: Response) => {
 
-  const signup_dto: SignUpDto = {
-    email: req.body.email,
-    password: req.body.password,
-    nickname: req.body.nickname,
-    gender: req.body.gender,
-    birth: req.body.birth,
-    notice_agreement: req.body.notice_agreement,
-  };
-
-  const result = await UserService.signUp(signup_dto);
-  if (result.message === 'User already exists') {
-    return res.status(400).json({ errors: [{ msg: 'User already exists' }] });
-  } else if (result.message === 'Server Error') {
+  const result = await UserService.googleLoginInfo();
+  if (result && result.message === 'Server Error') {
     res.status(500).send('Server Error');
   } else {
-    res.status(200).json({ token: result });
+    // 성공
+    console.log("구글 로그인 정보 받기")
+  }
+};
+
+export const googleLogin = async (req: Request, res: Response) => {
+  console.log("구글로그인")
+  // passport 로그인 전략에 의해 googleStrategy로 가서 구글계정 정보와 DB를 비교해서 회원가입시키거나 로그인 처리하게 한다.
+  const result = await UserService.googleLogin();
+  if (result && result.message === 'Server Error') {
+    res.status(500).send('Server Error');
+  } else {
+    // 성공
+    console.log("구글 로그인 또는 회원가입")
+  }
+};
+
+
+// 구글 소셜로그인 회원가입 콜백
+export const googleCallback = async (req: Request, res: Response) => {
+  
+  const signin_dto: GoogleSignInDto = {
+    user_id: req.user.id
+  };
+
+  // passport 로그인 전략에 의해 googleStrategy로 가서 구글계정 정보와 DB를 비교해서 회원가입시키거나 로그인 처리하게 한다.
+  const result = await UserService.googleCallback(signin_dto);
+  if (result.message === 'Server Error') {
+    res.status(500).send('Server Error');
+  } else {
+    // 성공
+    console.log("구글 로그인 성공")
+    res.json({login: "success", result});
   }
 };

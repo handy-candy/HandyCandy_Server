@@ -1,6 +1,6 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-import { SignInDto, SignUpDto } from '../dto/user.dto';
+import { SignInDto, SignUpDto, GoogleSignUpDto } from '../dto/user.dto';
 import User from '../models/User';
 
 module.exports = () => {
@@ -26,25 +26,14 @@ module.exports = () => {
                } else {
                   // 가입되지 않는 유저면 회원가입 시키고 로그인을 시킨다
 
-                  const signup_dto: SignUpDto = {
-                    email: "tempEmail",
-                    password: "tempPass",
-                    nickname: "tempNick",
-                    gender: 1,
-                    birth: 1111,
-                    notice_agreement: true,
+                  const signup_dto: GoogleSignUpDto = {
+                    email: profile.emails[0].value,
+                    nickname: profile.displayName,
+                    sns_id: profile.id,
+                    provider: 'google',
                   };
 
-                  const newUser = await User.create({
-                     email: profile.emails[0].value,
-                     nick: profile.displayName,
-                     sns_id: profile.id,
-                     provider: 'google',
-                     password: "tempPass",
-                     nickname: profile.displayName,
-                     gender: 1,
-                     birth: 1111,
-                  });
+                  const newUser = await User.create(signup_dto);
                   done(null, newUser); // 회원가입하고 로그인 인증 완료
                }
             } catch (error) {
