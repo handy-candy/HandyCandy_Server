@@ -1,6 +1,6 @@
 import express from 'express';
 import { check } from 'express-validator';
-import { signIn, signUp, googleLoginInfo, googleLogin, googleCallback} from '../controllers';
+import { signIn, signUp, googleCallback} from '../controllers';
 import passport from 'passport';
 const router = express.Router();
 import config from '../config';

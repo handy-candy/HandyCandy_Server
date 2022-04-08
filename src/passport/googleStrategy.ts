@@ -11,15 +11,15 @@ module.exports = () => {
             clientSecret: process.env.GOOGLE_SECRET,
             callbackURL: 'http://localhost:5000/api/users/google/callback', // 구글 로그인 Redirect URI 경로
          },
+         // profile: 획득한 구글 프로필
          async (accessToken, refreshToken, profile, done) => {
-            console.log('google profile : ', profile);
+
             try {
                const exUser = await User.findOne({
                   // 구글 플랫폼에서 로그인 했고 & snsId필드에 구글 아이디가 일치할경우
                   sns_id: profile.id, provider: 'google'
                });
-               // console.log("프로필 아이디 type:" + typeof profile.id)
-               // console.log("exUser: "+exUser);
+
                // 이미 가입된 구글 프로필이면 성공
                if (exUser) {
                   done(null, exUser); // 로그인 인증 완료
