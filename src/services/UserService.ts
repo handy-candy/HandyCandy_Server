@@ -1,8 +1,11 @@
-import { SignInDto, SignUpDto } from '../dto/user.dto';
+import { SignInDto, SignUpDto, GoogleSignInDto } from '../dto/user.dto';
 import User from '../models/User';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import config from '../config';
+
+import passport from 'passport';
+
 export class UserService {
   static async signUp(user_dto: SignUpDto) {
     try {
@@ -58,7 +61,7 @@ export class UserService {
           id: user.id,
         },
       };
-      const token = await jwt.sign(payload, config.jwtSecret, { expiresIn: '7d' });
+      const token = await jwt.sign(payload, config.jwtSecret, { expiresIn: '1d' });
       return token;
     } catch (err) {
       console.error(err.message);
@@ -67,4 +70,47 @@ export class UserService {
       };
     }
   }
+
+  static async googleLoginInfo() {
+    try {
+      // 프로필과 이메일 정보를 받는다.
+      passport.authenticate('google', { scope: ['profile', 'email'] })
+    } catch (err) {
+      console.error(err.message);
+      return {
+        message: 'Server Error',
+      };
+    }
+  }
+
+  static async googleLogin() {
+    try {
+      // passport 로그인 전략에 의해 googleStrategy로 가서 구글계정 정보와 DB를 비교해서 회원가입시키거나 로그인 처리하게 한다.
+      passport.authenticate('google', { failureRedirect: '/api/users/signUp' }) 
+    } catch (err) {
+      console.error(err.message);
+      return {
+        message: 'Server Error',
+      };
+    }
+  }
+
+  static async googleCallback(user_dto: GoogleSignInDto) {
+    try {
+      const payload = {
+        user: {
+          id: user_dto.user_id,
+        },
+      };
+      const token = await jwt.sign(payload, config.jwtSecret, { expiresIn: '1d' });
+      return token
+
+    } catch (err) {
+      console.error(err.message);
+      return {
+        message: 'Server Error',
+      };
+    }
+  }  
+  
 }
