@@ -187,16 +187,14 @@ export class CandiesService {
       const s3 = new AWS.S3();
 
       let url = '';
-      let info = '';
       let ret;
 
       const newCandy = new Candy({
-        name: newCandy_dto.candy_name,
+        name: '',
         shopping_link: newCandy_dto.shopping_link,
         user_id: newCandy_dto.user_id,
-        category_id: newCandy_dto.category_id,
-        reward_planned_at: new Date(Date.UTC(1111, 10, 11, 0, 0, 0)),
-        reward_completed_at: new Date(Date.UTC(1111, 10, 11, 0, 0, 0)),
+        shopping_link_name: '',
+        shopping_link_image: '',
         candy_image_url: '',
       });
 
@@ -204,47 +202,44 @@ export class CandiesService {
 
       if (newCandy_dto.shopping_link.length) {
         ret = await CandiesService.crawler(newCandy_dto.shopping_link);
-
-        info = ret['title'];
-        if (newCandy_dto.detail_info.length) {
-          info = newCandy_dto.detail_info;
-        }
-
         if (ret['image'].length) {
           new Promise((resolve, reject) => {
             fetch(ret['image']).then((res) => {
               res.body.pipe(fs.createWriteStream('temp.jpg')).on('finish', (data) => {
                 const param = {
-                  Bucket: 'sopt-join-seminar',
+                  Bucket: 'handycandy-bucket',
                   Key: (Math.floor(Math.random() * 1000).toString() + Date.now()).toString(),
                   ACL: 'public-read',
                   Body: fs.createReadStream('temp.jpg'),
                   ContentType: 'image/jpg',
                 };
+
                 s3.upload(param, async (error, data) => {
                   if (error) {
+                    console.log(error);
                     return 'Server Error';
                   }
                   url = data['Location'];
                   candy['candy_image_url'] = url;
-                  candy['detail_info'] = info;
+                  candy['name'] = ret['title'];
+                  candy['shopping_link_name'] = ret['siteName'];
+                  candy['shopping_link_image'] = ret['icon'];
                   await candy.save();
                 });
               });
             });
           });
+
+          const result = await {
+            candy_id: candy['_id'],
+          };
+          return result;
+        } else {
+          return '사이트를 찾을 수 없습니다.';
         }
+      } else {
+        return '링크를 입력해주세요';
       }
-
-      const category = await Category.findById(newCandy_dto.category_id);
-
-      const result = await {
-        candy_id: candy['_id'],
-        category_name: category['name'],
-        candy_name: candy['name'],
-        category_image_url: category['category_image_url'],
-      };
-      return result;
     } catch (err) {
       return { message: 'Server Error' };
     }

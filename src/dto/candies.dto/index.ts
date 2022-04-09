@@ -11,10 +11,7 @@ export interface candyDto {
 
 export interface newCandyDto {
   user_id: mongoose.Types.ObjectId;
-  category_id: mongoose.Types.ObjectId;
-  candy_name: string;
   shopping_link: string;
-  detail_info: string;
 }
 
 export interface addDateCandyDto {

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 export interface ICandy {
-  name: string;
+  name?: string;
   shopping_link?: string;
   shopping_link_image?: string;
   shopping_link_name?: string;
@@ -10,5 +10,5 @@ export interface ICandy {
   reward_planned_at?: Date;
   reward_completed_at?: Date;
   user_id: mongoose.Types.ObjectId;
-  category_id: mongoose.Types.ObjectId;
+  category_id?: mongoose.Types.ObjectId;
 }
