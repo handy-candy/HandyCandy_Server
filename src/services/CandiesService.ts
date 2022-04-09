@@ -183,7 +183,7 @@ export class CandiesService {
       const AWS = require('aws-sdk');
       const fs = require('fs');
 
-      AWS.config.loadFromPath('aws.config.json');
+      AWS.config.loadFromPath('./aws.config.json');
       const s3 = new AWS.S3();
 
       let url = '';
