@@ -47,12 +47,8 @@ export const addCandy = async (req: Request, res: Response) => {
   }
   const candy_dto: newCandyDto = {
     user_id: req.body.user.id,
-    category_id: req.body.category_id,
-    candy_name: req.body.candy_name,
     shopping_link: req.body.shopping_link,
-    detail_info: req.body.detail_info,
   };
-
   const result = await CandiesService.addCandy(candy_dto);
 
   res.status(200).json({ result: result });

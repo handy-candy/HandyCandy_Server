@@ -16,18 +16,13 @@ import auth from '../middleware/auth';
 import upload from '../middleware/upload';
 const router = Router();
 
-const check_candy = [
-  check('category_id', 'CategoryID is required').not().isEmpty(),
-  check('candy_name', 'CandyName is required').not().isEmpty(),
-];
-
 router.get('/commingCandy', auth, comingCandy);
 
 router.delete('/:candy_id', auth, deleteCandy);
 
 router.get('/recommendCandy', recommendCandy);
 
-router.post('/', auth, check_candy, addCandy);
+router.post('/', auth, addCandy);
 
 router.put('/date/:candy_id', auth, addDateCandy);
 

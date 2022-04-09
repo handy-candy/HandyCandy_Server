@@ -4,18 +4,17 @@ import { ICandy } from '../interfaces/ICandy';
 const CandySchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
   },
   shopping_link: {
     type: String,
   },
-  shopping_link_image:{
+  shopping_link_image: {
     type: String,
   },
-  shopping_link_name:{
+  shopping_link_name: {
     type: String,
   },
-  price:{
+  price: {
     type: String,
   },
   candy_image_url: {
@@ -35,7 +34,6 @@ const CandySchema = new mongoose.Schema({
   category_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
-    required: true,
   },
 });
 
