@@ -13,7 +13,6 @@ import {
   getAllCandies,
 } from '../controllers';
 import auth from '../middleware/auth';
-import upload from '../middleware/upload';
 const router = Router();
 
 router.get('/commingCandy', auth, comingCandy);
@@ -32,7 +31,7 @@ router.get('/completedCandy/detail/:candy_id', auth, detailCompletedCandies);
 
 router.put('/:candy_id', auth, modifyCandy);
 
-router.patch('/image/:candy_id', upload.single('candy_image_url'), auth, modifyImage);
+//router.patch('/image/:candy_id', upload.single('candy_image_url'), auth, modifyImage);
 
 router.get('/all', auth, getAllCandies);
 
