@@ -1,8 +1,11 @@
-import { SignInDto, SignUpDto } from '../dto/user.dto';
+import { SignInDto, SignUpDto, GoogleSignInDto } from '../dto/user.dto';
 import User from '../models/User';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import config from '../config';
+
+import passport from 'passport';
+
 export class UserService {
   static async signUp(user_dto: SignUpDto) {
     try {
@@ -58,7 +61,7 @@ export class UserService {
           id: user.id,
         },
       };
-      const token = await jwt.sign(payload, config.jwtSecret, { expiresIn: '7d' });
+      const token = await jwt.sign(payload, config.jwtSecret, { expiresIn: '1d' });
       return token;
     } catch (err) {
       console.error(err.message);
@@ -67,4 +70,24 @@ export class UserService {
       };
     }
   }
+
+
+  static async googleCallback(user_dto: GoogleSignInDto) {
+    try {
+      const payload = {
+        user: {
+          id: user_dto.user_id,
+        },
+      };
+      const token = await jwt.sign(payload, config.jwtSecret, { expiresIn: '1d' });
+      return token
+
+    } catch (err) {
+      console.error(err.message);
+      return {
+        message: 'Server Error',
+      };
+    }
+  }  
+  
 }
