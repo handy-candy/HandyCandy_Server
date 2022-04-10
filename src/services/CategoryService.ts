@@ -9,22 +9,33 @@ export class CategoryService {
       const candyList = await Candy.find({ user_id: user_dto.user_id })
         .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
         .sort({ reward_planned_at: 1 });
-
       const today = new Date();
       const result = candyList.map((item) => {
         const planned_date = item.reward_planned_at;
-        const d_day = Math.floor((today.getTime() - planned_date.getTime()) / (1000 * 3600 * 24));
+        let d_day = 1111;
+        let category_image_url = '';
+        let category_name = '';
+
+        if (planned_date.getFullYear() != 1111) {
+          d_day = Math.floor((today.getTime() - planned_date.getTime()) / (1000 * 3600 * 24));
+        }
+
+        if (item.category_id != null) {
+          category_image_url = item.category_id['category_image_url'];
+          category_name = item.category_id['name'];
+        }
 
         return {
           candy_id: item._id,
           candy_image_url: item.candy_image_url,
           candy_name: item.name,
-          category_image_url: item.category_id['category_image_url'],
+          category_image_url: category_image_url,
           d_day: d_day,
-          category_name: item.category_id['name'],
+          category_name: category_name,
           reward_planned_at: item.reward_planned_at,
           shopping_link_image: item.shopping_link_image,
           shopping_link_name: item.shopping_link_name,
+          price: item.price,
         };
       });
 

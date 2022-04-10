@@ -29,7 +29,9 @@ router.get('/completedCandy', auth, completedCandy);
 
 router.get('/completedCandy/detail/:candy_id', auth, detailCompletedCandies);
 
-router.put('/:candy_id', auth, modifyCandy);
+//router.put('/:candy_id', auth, modifyCandy);
+
+router.put('/info/:candy_id', auth, modifyCandy);
 
 //router.patch('/image/:candy_id', upload.single('candy_image_url'), auth, modifyImage);
 
