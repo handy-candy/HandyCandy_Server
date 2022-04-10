@@ -20,7 +20,6 @@ export interface addDateCandyDto {
   year: number;
   month: number;
   date: number;
-  message: string;
 }
 
 export interface completedCandyDto {
@@ -45,12 +44,8 @@ export interface reviewDto {
 export interface modifyCandyDto {
   user_id: mongoose.Types.ObjectId;
   candy_id: mongoose.Types.ObjectId;
-  year: number;
-  month: number;
-  date: number;
   candy_name: string;
-  category_id: mongoose.Types.ObjectId;
-  message: string;
+  price: number;
 }
 
 export interface moidfyImageDto {

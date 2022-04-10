@@ -95,6 +95,11 @@ export class CandiesService {
   static async deleteCandy(candy_dto: candyDto) {
     try {
       const candy = await Candy.findById(candy_dto.candy_id);
+      const AWS = require('aws-sdk');
+
+      AWS.config.loadFromPath('./aws.config.json');
+      const s3 = new AWS.S3();
+
       if (!candy) {
         return {
           message: 'Candy not found',
@@ -103,6 +108,21 @@ export class CandiesService {
       if (candy.user_id.toString() !== candy_dto.user_id.toString()) {
         return { message: 'User not Authorized' };
       }
+      if (candy['candy_image_url'].length) {
+        const bucket_key = candy['candy_image_url'].slice(-16);
+        s3.deleteObject(
+          {
+            Bucket: 'handycandy-bucket',
+            Key: bucket_key,
+          },
+          (error, data) => {
+            if (error) {
+              return 'Server Error';
+            }
+          },
+        );
+      }
+
       await candy.remove();
 
       const result = '캔디가 삭제되었습니다.';
@@ -196,6 +216,9 @@ export class CandiesService {
         shopping_link_name: '',
         shopping_link_image: '',
         candy_image_url: '',
+        reward_planned_at: new Date(Date.UTC(1111, 11, 1, 0, 0, 0)),
+        category_id: null,
+        price: -1,
       });
 
       const candy = await newCandy.save();
@@ -216,7 +239,6 @@ export class CandiesService {
 
                 s3.upload(param, async (error, data) => {
                   if (error) {
-                    console.log(error);
                     return 'Server Error';
                   }
                   url = data['Location'];
@@ -260,7 +282,6 @@ export class CandiesService {
         Date.UTC(addDateCandy_dto.year, addDateCandy_dto.month - 1, addDateCandy_dto.date, 0, 0, 0),
       );
       candy['reward_planned_at'] = planned_date;
-      candy['message'] = addDateCandy_dto.message;
 
       await candy.save();
 
@@ -672,7 +693,7 @@ export class CandiesService {
 
   static async modifyCandy(modifyCandy_dto: modifyCandyDto) {
     try {
-      const { user_id, candy_id, year, month, date, candy_name, category_id, message } = modifyCandy_dto;
+      const { user_id, candy_id, candy_name, price } = modifyCandy_dto;
 
       const candy = await Candy.findById(candy_id);
 
@@ -683,10 +704,8 @@ export class CandiesService {
         return { error: 'User not Authorized' };
       }
 
-      candy['reward_planned_at'] = new Date(Date.UTC(year, month - 1, date, 0, 0, 0));
       candy['name'] = candy_name;
-      candy['category_id'] = category_id;
-      candy['message'] = message;
+      candy['price'] = price;
 
       await candy.save();
       const result = await '담은 캔디 수정이 완료되었습니다.';

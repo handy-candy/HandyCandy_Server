@@ -5,7 +5,7 @@ export interface ICandy {
   shopping_link?: string;
   shopping_link_image?: string;
   shopping_link_name?: string;
-  price?: string;
+  price?: number;
   candy_image_url?: string;
   reward_planned_at?: Date;
   reward_completed_at?: Date;

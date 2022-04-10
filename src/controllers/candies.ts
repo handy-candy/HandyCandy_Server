@@ -61,7 +61,6 @@ export const addDateCandy = async (req: Request, res: Response) => {
     year: req.body.year,
     month: req.body.month,
     date: req.body.date,
-    message: req.body.message,
   };
   const result = await CandiesService.addDateCandy(addDateCandy_dto);
 
@@ -93,12 +92,8 @@ export const modifyCandy = async (req: Request, res: Response) => {
   const modifyCandy_dto: modifyCandyDto = {
     user_id: req.body.user.id,
     candy_id: req.params.candy_id,
-    year: req.body.year,
-    month: req.body.month,
-    date: req.body.date,
     candy_name: req.body.candy_name,
-    category_id: req.body.category_id,
-    message: req.body.message,
+    price: req.body.price,
   };
 
   const result = await CandiesService.modifyCandy(modifyCandy_dto);
