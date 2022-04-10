@@ -4,7 +4,11 @@ import connectDB from './Logger/db';
 import session from 'express-session';
 
 import passport from 'passport';
+import swaggerUi from "swagger-ui-express";
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerOptions from './modules/swagger';
 const passportConfig = require('./passport');
+
 
 const cors = require('cors');
 const app = express();
@@ -23,6 +27,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api', router);
+
+const specs = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, { explorer: true }));
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(
