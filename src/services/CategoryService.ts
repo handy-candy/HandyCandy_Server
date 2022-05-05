@@ -131,62 +131,57 @@ export class CategoryService {
       if (!category) {
         return { message: 'Category not found' };
       }
-      let banner = get_banner_image_url(category['category_image_url']);
-      const today = new Date();
+
       const coming_candy_array = await Candy.find({
         user_id: detailCategory_dto.user_id,
         category_id: detailCategory_dto.category_id,
-        reward_planned_at: { $gte: new Date(Date.UTC(today.getFullYear(), today.getMonth(), 1, 0, 0, 0)) },
-        reward_completed_at: { $lte: new Date(Date.UTC(1111, 10, 13, 0, 0, 0)) },
+        reward_completed_at: { $lte: new Date(Date.UTC(1111, 11, 13, 0, 0, 0)) },
       }).sort({ date: -1 });
 
-      const waiting_candy_array = await Candy.find({
-        user_id: detailCategory_dto.user_id,
-        category_id: detailCategory_dto.category_id,
-        reward_planned_at: { $lte: new Date(Date.UTC(1111, 10, 13, 0, 0, 0)) },
-        reward_completed_at: { $lte: new Date(Date.UTC(1111, 10, 13, 0, 0, 0)) },
-      }).sort({ date: -1 });
+      const today = new Date(); // 현재 날짜
 
-      let result_coming_candy_array = [];
-      let result_waiting_candy_array = [];
-      for (const candy of coming_candy_array) {
-        let data = {
-          candy_id: candy['_id'],
-          candy_image_url: candy['candy_image_url'],
-          candy_name: candy['name'],
-          category_name: category['name'],
-          reward_planned_at: candy['reward_planned_at'],
-        };
-        let today = new Date(); // 현재 날짜
-        let d_day = Math.floor((candy['reward_planned_at'].getTime() - today.getTime()) / (1000 * 3600 * 24));
-        data['d_day'] = d_day;
-        result_coming_candy_array.push(data);
-      }
-      for (const candy of waiting_candy_array) {
-        let data = {
-          candy_id: candy['_id'],
-          candy_image_url: candy['candy_image_url'],
-          candy_name: candy['name'],
-          category_name: category['name'],
-        };
-        let today = new Date(); // 현재 날짜
-        let waiting_date = Math.floor((today.getTime() - candy['created_at'].getTime()) / (1000 * 3600 * 24));
+      const candy_array = await {
+        candy_array: coming_candy_array.map((v) => {
+          if (v.reward_planned_at.getFullYear() != 1111) {
+            //보상날짜 등록
+            const planned_date = v.reward_planned_at;
+            let d_day;
+            if (planned_date.getTime() - today.getTime() < 0) {
+              d_day = Math.floor((today.getTime() - planned_date.getTime()) / (1000 * 3600 * 24));
+              d_day *= -1;
+            } else {
+              d_day = Math.floor((planned_date.getTime() - today.getTime()) / (1000 * 3600 * 24));
+            }
 
-        data['waiting_date'] = waiting_date;
-        result_waiting_candy_array.push(data);
-      }
-      let coming_candy_count = coming_candy_array.length;
-      let waiting_candy_count = waiting_candy_array.length;
-      const result = await {
-        banner: banner,
-        all_candy_count: coming_candy_count + waiting_candy_count,
-        coming_candy_count: coming_candy_count,
-        waiting_candy_count: waiting_candy_count,
-        coming_candy: result_coming_candy_array,
-        waiting_candy: result_waiting_candy_array,
+            return {
+              candy_id: v._id,
+              candy_image_url: v.candy_image_url,
+              candy_name: v.name,
+              category_image_url: v.category_id['category_image_url'],
+              d_day: d_day,
+              reward_planned_at: v.reward_planned_at,
+              category_name: v.category_id['name'],
+              shopping_link_name: v.shopping_link_name,
+              shopping_link_image: v.shopping_link_image,
+              price: v.price,
+            };
+          } else {
+            return {
+              candy_id: v._id,
+              candy_image_url: v.candy_image_url,
+              candy_name: v.name,
+              category_image_url: v.category_id['category_image_url'],
+              reward_planned_at: v.reward_planned_at,
+              category_name: v.category_id['name'],
+              shopping_link_name: v.shopping_link_name,
+              shopping_link_image: v.shopping_link_image,
+              price: v.price,
+            };
+          }
+        }),
       };
 
-      return result;
+      return candy_array;
     } catch (err) {
       console.error(err.message);
       return {
