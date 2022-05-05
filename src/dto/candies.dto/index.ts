@@ -53,3 +53,10 @@ export interface moidfyImageDto {
   candy_id: mongoose.Types.ObjectId;
   candy_image_url: string;
 }
+
+export interface addCandyCategoryDto {
+  user_id: mongoose.Types.ObjectId;
+  candy_id: mongoose.Types.ObjectId;
+  category_name: string;
+  category_image_url: string;
+}
