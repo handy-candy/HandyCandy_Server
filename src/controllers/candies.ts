@@ -9,6 +9,7 @@ import {
   completedCandyDto,
   modifyCompletedCandyDto,
   reviewDto,
+  addCandyCategoryDto,
   modifyCandyDto,
   moidfyImageDto,
 } from '../dto/candies.dto';
@@ -118,6 +119,19 @@ export const getAllCandies = async (req: Request, res: Response) => {
   };
 
   const result = await CandiesService.getAllCandies(completedCandy_dto);
+
+  res.status(200).json({ result: result });
+};
+
+export const addCandyCategory = async (req: Request, res: Response) => {
+  const candy_dto: addCandyCategoryDto = {
+    user_id: req.body.user.id,
+    candy_id: req.params.candy_id,
+    category_name: req.body.category_name,
+    category_image_url: req.body.category_image_url,
+  };
+
+  const result = await CandiesService.addCandyCategory(candy_dto);
 
   res.status(200).json({ result: result });
 };

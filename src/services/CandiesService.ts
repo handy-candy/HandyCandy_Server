@@ -6,6 +6,7 @@ import {
   completedCandyDto,
   modifyCandyDto,
   moidfyImageDto,
+  addCandyCategoryDto,
 } from '../dto/candies.dto';
 import Candy from '../models/Candy';
 import Category from '../models/Category';
@@ -871,6 +872,40 @@ export class CandiesService {
       if (err.kind === 'ObjectId') {
         return { message: 'Candy not found' };
       }
+      return {
+        message: 'Server Error',
+      };
+    }
+  }
+
+  static async addCandyCategory(candy_dto: addCandyCategoryDto) {
+    try {
+      const category = await Category.find({
+        user_id: candy_dto.user_id,
+        name: candy_dto.category_name,
+      });
+
+      const candy = await Candy.findById(candy_dto.candy_id);
+
+      if (!category.length) {
+        const newCategory = new Category({
+          name: candy_dto.category_name,
+          user_id: candy_dto.user_id,
+          category_image_url: candy_dto.category_image_url,
+        });
+
+        const new_category = await newCategory.save();
+
+        candy['category_id'] = new_category['_id'];
+        await candy.save();
+      } else {
+        candy['category_id'] = category[0]['_id'];
+        await candy.save();
+      }
+      return {
+        message: '캔디의 카테고리가 등록되었습니다.',
+      };
+    } catch (err) {
       return {
         message: 'Server Error',
       };

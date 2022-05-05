@@ -18,6 +18,7 @@ import {
   modifyCandy,
   modifyImage,
   getAllCandies,
+  addCandyCategory,
 } from '../controllers';
 import auth from '../middleware/auth';
 const router = Router();
@@ -26,8 +27,6 @@ const check_candy = [
   check('category_id', 'CategoryID is required').not().isEmpty(),
   check('candy_name', 'CandyName is required').not().isEmpty(),
 ];
-
-
 
 router.get('/commingCandy', auth, comingCandy);
 
@@ -57,8 +56,8 @@ router.post('/', auth, addCandy);
  *        description: User token
  *        schema:
  *          type: string
- *               
- * 
+ *
+ *
  *    requestBody:
  *      required: true
  *      content:
@@ -95,10 +94,7 @@ router.post('/', auth, addCandy);
  */
 router.put('/date/:candy_id', auth, addDateCandy);
 
-
 router.get('/completedCandy', auth, completedCandy);
-
-
 
 /**
  * @swagger
@@ -130,5 +126,7 @@ router.put('/info/:candy_id', auth, modifyCandy);
 //router.patch('/image/:candy_id', upload.single('candy_image_url'), auth, modifyImage);
 
 router.get('/all', auth, getAllCandies);
+
+router.put('/category/:candy_id', auth, addCandyCategory);
 
 module.exports = router;
