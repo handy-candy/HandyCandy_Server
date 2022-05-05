@@ -218,6 +218,7 @@ export class CandiesService {
         shopping_link_image: '',
         candy_image_url: '',
         reward_planned_at: new Date(Date.UTC(1111, 11, 1, 0, 0, 0)),
+        reward_completed_at: new Date(Date.UTC(1111, 11, 1, 0, 0, 0)),
         category_id: null,
         price: -1,
       });
