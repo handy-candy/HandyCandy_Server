@@ -9,7 +9,8 @@ module.exports = () => {
          {
             clientID: process.env.GOOGLE_ID, // 구글 로그인에서 발급받은 REST API 키
             clientSecret: process.env.GOOGLE_SECRET,
-            callbackURL: 'http://localhost:5000/api/users/google/callback', // 구글 로그인 Redirect URI 경로
+            callbackURL: 'https://www.handycandy.cf/api/users/google/callback', // 구글 로그인 Redirect URI 경로
+            // callbackURL: 'http://localhost:5000/api/users/google/callback', // 구글 로그인 Redirect URI 경로
          },
          // profile: 획득한 구글 프로필
          async (accessToken, refreshToken, profile, done) => {

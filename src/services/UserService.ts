@@ -73,7 +73,7 @@ export class UserService {
 
 
   static async googleCallback(user_dto: GoogleSignInDto) {
-    try {
+    // try {
       const payload = {
         user: {
           id: user_dto.user_id,
@@ -82,12 +82,13 @@ export class UserService {
       const token = await jwt.sign(payload, config.jwtSecret, { expiresIn: '1d' });
       return token
 
-    } catch (err) {
-      console.error(err.message);
-      return {
-        message: 'Server Error',
-      };
-    }
+    // } catch (err) {
+    //   console.error(err.message); 
+    //   return {
+    //     error: true,
+    //     message: err,
+    //   };
+    // }
   }  
   
 }

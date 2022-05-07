@@ -53,17 +53,24 @@ export const signIn = async (req: Request, res: Response) => {
 
 // 구글 소셜로그인 회원가입 콜백
 export const googleCallback = async (req: Request, res: Response) => {
-
+  try{
   const signin_dto: GoogleSignInDto = {
     user_id: req.user.id
   };
 
   // passport 로그인 전략에 의해 googleStrategy로 가서 구글계정 정보와 DB를 비교해서 회원가입시키거나 로그인 처리하게 한다.
   const result = await UserService.googleCallback(signin_dto);
-  if (result.message === 'Server Error') {
-    res.status(500).send('Server Error');
-  } else {
-    // 성공
-    res.json({login: "success", result});
-  }
+
+  // if (result.error === true) {
+  //   res.status(500).send(result.message.stack);
+  // } else {
+  //   // 성공
+  //   res.json({login: "success", result});
+  // }
+  // 에러가 안 나면 성공
+  res.json({login: "success", result});
+} catch (err){
+  console.log(err);
+  res.status(500).send(err.stack);
+}
 };
