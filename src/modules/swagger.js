@@ -8,8 +8,11 @@ const swaggerOptions = {
             description: 'HandyCandy API',
         },
         servers:[
+            {
+            	url:"https://handycandy.cf/api",
+            },
         	{
-            	url:"http://localhost:5000",
+            	url:"http://localhost:5000/api",
             },
        ],
 	},
