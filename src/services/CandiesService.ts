@@ -297,6 +297,35 @@ export class CandiesService {
     }
   }
 
+  static async rewardCandy(candy_dto: candyDto) {
+    try {
+      const candy = await Candy.findById(candy_dto.candy_id);
+      console.log(candy);
+      if (!candy) {
+        return { message: 'Candy not found' };
+      }
+      if (candy.user_id.toString() !== candy_dto.user_id.toString()) {
+        return { message: 'User not Authorized' };
+      }
+
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      const date = today.getDate();
+
+      candy['reward_completed_at'] = new Date(Date.UTC(year, month, date, 0, 0, 0));
+      await candy.save();
+
+      return {
+        message: '보상이 완료되었습니다',
+      };
+    } catch (err) {
+      return {
+        message: 'Server Error',
+      };
+    }
+  }
+
   static async completedCandy(completedCandy_dto: completedCandyDto) {
     try {
       const today = new Date();

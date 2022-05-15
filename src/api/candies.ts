@@ -14,6 +14,7 @@ import {
   addCandy,
   addDateCandy,
   completedCandy,
+  rewardCandy,
   detailCompletedCandies,
   modifyCandy,
   modifyImage,
@@ -128,5 +129,7 @@ router.put('/info/:candy_id', auth, modifyCandy);
 router.get('/all', auth, getAllCandies);
 
 router.put('/category/:candy_id', auth, addCandyCategory);
+
+router.put('/rewardCandy/:candy_id', auth, rewardCandy);
 
 module.exports = router;
