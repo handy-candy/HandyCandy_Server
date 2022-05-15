@@ -1,6 +1,6 @@
 import express from 'express';
 import { check } from 'express-validator';
-import { signIn, signUp, googleCallback} from '../controllers';
+import { signIn, signUp, googleCallback } from '../controllers';
 import passport from 'passport';
 const router = express.Router();
 import config from '../config';
@@ -23,7 +23,7 @@ router.post('/signUp', check_signup, signUp);
 
 router.post('/signIn', check_signin, signIn);
 
-
+/*
 //* 구글로 로그인하기 라우터 ***********************
 
 // 프로필과 이메일 정보를 받는다.
@@ -38,5 +38,5 @@ router.get(
    passport.authenticate('google', { failureRedirect: '/api/users/signUp' }), // 그리고 passport 로그인 전략에 의해 googleStrategy로 가서 구글계정 정보와 DB를 비교해서 회원가입시키거나 로그인 처리하게 한다.
    googleCallback
 );
-
+*/
 module.exports = router;

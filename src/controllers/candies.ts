@@ -135,3 +135,14 @@ export const addCandyCategory = async (req: Request, res: Response) => {
 
   res.status(200).json({ result: result });
 };
+
+export const rewardCandy = async (req: Request, res: Response) => {
+  const date_dto: candyDto = {
+    user_id: req.body.user.id,
+    candy_id: req.params.candy_id,
+  };
+
+  const result = await CandiesService.rewardCandy(date_dto);
+
+  res.status(200).json({ result: result });
+};
