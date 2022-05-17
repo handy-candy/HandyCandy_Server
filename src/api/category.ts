@@ -1,6 +1,13 @@
 import { Router } from 'express';
 import { check } from 'express-validator';
-import { allCategory, deleteCategory, addCategory, modifyCategory, detailCategory } from '../controllers/category';
+import {
+  allCategory,
+  deleteCategory,
+  addCategory,
+  modifyCategory,
+  detailCategory,
+  completedDetailCategory,
+} from '../controllers/category';
 import auth from '../middleware/auth';
 const router = Router();
 const moment = require('moment');
@@ -11,7 +18,6 @@ const check_category = [
   check('name', 'Category name is required').not().isEmpty(),
   check('category_image_url', 'category emoji is required').not().isEmpty(),
 ];
-
 
 /**
  * @swagger
@@ -27,8 +33,8 @@ const check_category = [
  *        description: User token
  *        schema:
  *          type: string
- *               
- * 
+ *
+ *
  *    responses:
  *      "200":
  *        description: 성공
@@ -45,7 +51,7 @@ const check_category = [
  *                result:
  *                  type: array
  *                  description: 사용자의 모든 카테고리 리스트
- *                  items: 
+ *                  items:
  *                    type: object
  *                    properties:
  *                      category_id:
@@ -81,7 +87,6 @@ router.post('/', auth, check_category, addCategory);
 
 router.put('/:id', auth, modifyCategory);
 
-
 /**
  * @swagger
  * /category/detail/{id}:
@@ -97,13 +102,13 @@ router.put('/:id', auth, modifyCategory);
  *        schema:
  *          type: string
  *      - in: path
- *        name: category_id 
+ *        name: category_id
  *        required: true
  *        description: 카테고리 ObjectID
  *        schema:
  *          type: string
- *               
- * 
+ *
+ *
  *    responses:
  *      "200":
  *        description: 성공
@@ -134,22 +139,22 @@ router.put('/:id', auth, modifyCategory);
  *                      example: 11
  *                    coming_candy:
  *                      type: array
- *                      items: 
+ *                      items:
  *                        type: object
- *                        properties: 
- *                          candy_id: 
+ *                        properties:
+ *                          candy_id:
  *                            type: string
  *                            description: 캔디 아이디
  *                          candy_image_url:
  *                            type: string
  *                            description: 캔디 사진
- *                          candy_name: 
+ *                          candy_name:
  *                            type: string
  *                            description: 캔디 이름
  *                          category_name:
  *                            type: string
  *                            description: 카테고리 이름
- *                          reward_planned_at: 
+ *                          reward_planned_at:
  *                            type: date
  *                            description: 보상 날짜 ("yyyy-mm-dd")
  *                            example: 2021-07-17T00:00:00.000Z
@@ -158,22 +163,24 @@ router.put('/:id', auth, modifyCategory);
  *                            description: 디데이 (보상완료일까지 남은 일수)
  *                    waiting_candy:
  *                      type: array
- *                      items: 
+ *                      items:
  *                        type: object
- *                        properties: 
- *                          candy_id: 
+ *                        properties:
+ *                          candy_id:
  *                            type: string
  *                          candy_image_url:
  *                            type: string
- *                          candy_name: 
+ *                          candy_name:
  *                            type: string
  *                          category_name:
  *                            type: string
  *                          waiting_date:
  *                            type: integer
- *                    
+ *
  */
 
 router.get('/detail/:id', auth, detailCategory);
+
+router.get('/completed/detail/:id', auth, completedDetailCategory);
 
 module.exports = router;
