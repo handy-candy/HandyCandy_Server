@@ -12,6 +12,8 @@ import {
   addCandyCategoryDto,
   modifyCandyDto,
   moidfyImageDto,
+  monthlyCompletedCandyDto,
+  monthlyCategoryCompletedCandyDto,
 } from '../dto/candies.dto';
 
 export const comingCandy = async (req: Request, res: Response) => {
@@ -143,6 +145,31 @@ export const rewardCandy = async (req: Request, res: Response) => {
   };
 
   const result = await CandiesService.rewardCandy(date_dto);
+
+  res.status(200).json({ result: result });
+};
+
+export const monthlyCompletedCandy = async (req: Request, res: Response) => {
+  const monthlyCompletedCandy_dto: monthlyCompletedCandyDto = {
+    user_id: req.body.user.id,
+    year: req.body.year,
+    month: req.body.month,
+  };
+
+  const result = await CandiesService.monthlyCompletedCandy(monthlyCompletedCandy_dto);
+
+  res.status(200).json({ result: result });
+};
+
+export const monthlyCategoryCompletedCandy = async (req: Request, res: Response) => {
+  const monthlyCompletedCandy_dto: monthlyCategoryCompletedCandyDto = {
+    user_id: req.body.user.id,
+    category_id: req.params.category_id,
+    year: req.body.year,
+    month: req.body.month,
+  };
+
+  const result = await CandiesService.monthlyCategoryCompletedCandy(monthlyCompletedCandy_dto);
 
   res.status(200).json({ result: result });
 };

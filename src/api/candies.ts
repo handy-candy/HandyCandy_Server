@@ -20,6 +20,8 @@ import {
   modifyImage,
   getAllCandies,
   addCandyCategory,
+  monthlyCompletedCandy,
+  monthlyCategoryCompletedCandy,
 } from '../controllers';
 import auth from '../middleware/auth';
 const router = Router();
@@ -131,5 +133,9 @@ router.get('/all', auth, getAllCandies);
 router.put('/category/:candy_id', auth, addCandyCategory);
 
 router.put('/rewardCandy/:candy_id', auth, rewardCandy);
+
+router.get('/monthlyCompletedCandy/all', auth, monthlyCompletedCandy);
+
+router.get('/monthlyCompletedCandy/:category_id', auth, monthlyCategoryCompletedCandy);
 
 module.exports = router;

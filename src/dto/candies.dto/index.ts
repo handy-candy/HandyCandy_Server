@@ -60,3 +60,16 @@ export interface addCandyCategoryDto {
   category_name: string;
   category_image_url: string;
 }
+
+export interface monthlyCompletedCandyDto {
+  user_id: mongoose.Types.ObjectId;
+  month: number;
+  year: number;
+}
+
+export interface monthlyCategoryCompletedCandyDto {
+  user_id: mongoose.Types.ObjectId;
+  month: number;
+  year: number;
+  category_id: mongoose.Types.ObjectId;
+}
