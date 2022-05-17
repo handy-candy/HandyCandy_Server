@@ -7,6 +7,8 @@ import {
   modifyCandyDto,
   moidfyImageDto,
   addCandyCategoryDto,
+  monthlyCompletedCandyDto,
+  monthlyCategoryCompletedCandyDto,
 } from '../dto/candies.dto';
 import Candy from '../models/Candy';
 import Category from '../models/Category';
@@ -326,128 +328,99 @@ export class CandiesService {
     }
   }
 
+  static async monthlyCompletedCandy(monthlyCompletedCandy_dto: monthlyCompletedCandyDto) {
+    const monthlyCandyList = await Candy.find({
+      user_id: monthlyCompletedCandy_dto.user_id,
+      reward_completed_at: {
+        $lt: new Date(Date.UTC(monthlyCompletedCandy_dto.year, monthlyCompletedCandy_dto.month, 1, 0, 0, 0)),
+        $gte: new Date(Date.UTC(monthlyCompletedCandy_dto.year, monthlyCompletedCandy_dto.month - 1, 1, 0, 0, 0)),
+      },
+    })
+      .populate('category_id')
+      .sort({ reward_completed_at: -1 });
+
+    const today = new Date();
+    const day = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0));
+
+    const candy_array = await {
+      result: monthlyCandyList.map((v) => {
+        let category_image_url = '';
+        let category_name = '';
+        if (v.category_id != null) {
+          category_image_url = v.category_id['category_image_url'];
+          category_name = v.category_id['name'];
+        }
+        return {
+          candy_id: v._id,
+          candy_image_url: v.candy_image_url,
+          candy_name: v.name,
+          category_image_url: category_image_url,
+          category_name: category_name,
+          shopping_link_name: v.shopping_link_name,
+          shopping_link_image: v.shopping_link_image,
+          year: v.reward_completed_at.getFullYear(),
+          month: v.reward_completed_at.getMonth() + 1,
+          date: v.reward_completed_at.getDate(),
+        };
+      }),
+    };
+
+    return {
+      count: candy_array['result'].length,
+      candy_array: candy_array['result'],
+    };
+  }
+
+  static async monthlyCategoryCompletedCandy(monthlyCategoryCompletedCandy_dto: monthlyCategoryCompletedCandyDto) {
+    const monthlyCandyList = await Candy.find({
+      user_id: monthlyCategoryCompletedCandy_dto.user_id,
+      category_id: monthlyCategoryCompletedCandy_dto.category_id,
+      reward_completed_at: {
+        $lt: new Date(
+          Date.UTC(monthlyCategoryCompletedCandy_dto.year, monthlyCategoryCompletedCandy_dto.month, 1, 0, 0, 0),
+        ),
+        $gte: new Date(
+          Date.UTC(monthlyCategoryCompletedCandy_dto.year, monthlyCategoryCompletedCandy_dto.month - 1, 1, 0, 0, 0),
+        ),
+      },
+    })
+      .populate('category_id')
+      .sort({ reward_completed_at: -1 });
+
+    const today = new Date();
+    const day = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0));
+
+    const candy_array = await {
+      result: monthlyCandyList.map((v) => {
+        let category_image_url = '';
+        let category_name = '';
+        if (v.category_id != null) {
+          category_image_url = v.category_id['category_image_url'];
+          category_name = v.category_id['name'];
+        }
+        return {
+          candy_id: v._id,
+          candy_image_url: v.candy_image_url,
+          candy_name: v.name,
+          category_image_url: category_image_url,
+          category_name: category_name,
+          shopping_link_name: v.shopping_link_name,
+          shopping_link_image: v.shopping_link_image,
+          year: v.reward_completed_at.getFullYear(),
+          month: v.reward_completed_at.getMonth() + 1,
+          date: v.reward_completed_at.getDate(),
+        };
+      }),
+    };
+
+    return {
+      count: candy_array['result'].length,
+      candy_array: candy_array['result'],
+    };
+  }
+
   static async completedCandy(completedCandy_dto: completedCandyDto) {
     /*
-      const january_candy = await Candy.find({
-        user_id: completedCandy_dto.user_id,
-        reward_completed_at: {
-          $lt: new Date(Date.UTC(today.getFullYear(), 1, 1, 0, 0, 0)),
-          $gte: new Date(Date.UTC(today.getFullYear(), 0, 1, 0, 0, 0)),
-        },
-      })
-        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
-        .sort({ reward_completed_at: -1 });
-
-      const february_candy = await Candy.find({
-        user_id: completedCandy_dto.user_id,
-        reward_completed_at: {
-          $lt: new Date(Date.UTC(today.getFullYear(), 2, 1, 0, 0, 0)),
-          $gte: new Date(Date.UTC(today.getFullYear(), 1, 1, 0, 0, 0)),
-        },
-      })
-        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
-        .sort({ reward_completed_at: -1 });
-
-      const march_candy = await Candy.find({
-        user_id: completedCandy_dto.user_id,
-        reward_completed_at: {
-          $lt: new Date(Date.UTC(today.getFullYear(), 3, 1, 0, 0, 0)),
-          $gte: new Date(Date.UTC(today.getFullYear(), 2, 1, 0, 0, 0)),
-        },
-      })
-        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
-        .sort({ reward_completed_at: -1 });
-
-      const april_candy = await Candy.find({
-        user_id: completedCandy_dto.user_id,
-        reward_completed_at: {
-          $lt: new Date(Date.UTC(today.getFullYear(), 4, 1, 0, 0, 0)),
-          $gte: new Date(Date.UTC(today.getFullYear(), 3, 1, 0, 0, 0)),
-        },
-      })
-        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
-        .sort({ reward_completed_at: -1 });
-
-      const may_candy = await Candy.find({
-        user_id: completedCandy_dto.user_id,
-        reward_completed_at: {
-          $lt: new Date(Date.UTC(today.getFullYear(), 5, 1, 0, 0, 0)),
-          $gte: new Date(Date.UTC(today.getFullYear(), 4, 1, 0, 0, 0)),
-        },
-      })
-        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
-        .sort({ reward_completed_at: -1 });
-
-      const june_candy = await Candy.find({
-        user_id: completedCandy_dto.user_id,
-        reward_completed_at: {
-          $lt: new Date(Date.UTC(today.getFullYear(), 6, 1, 0, 0, 0)),
-          $gte: new Date(Date.UTC(today.getFullYear(), 5, 1, 0, 0, 0)),
-        },
-      })
-        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
-        .sort({ reward_completed_at: -1 });
-
-      const july_candy = await Candy.find({
-        user_id: completedCandy_dto.user_id,
-        reward_completed_at: {
-          $lt: new Date(Date.UTC(today.getFullYear(), 7, 1, 0, 0, 0)),
-          $gte: new Date(Date.UTC(today.getFullYear(), 6, 1, 0, 0, 0)),
-        },
-      })
-        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
-        .sort({ reward_completed_at: -1 });
-
-      const august_candy = await Candy.find({
-        user_id: completedCandy_dto.user_id,
-        reward_completed_at: {
-          $lt: new Date(Date.UTC(today.getFullYear(), 8, 1, 0, 0, 0)),
-          $gte: new Date(Date.UTC(today.getFullYear(), 7, 1, 0, 0, 0)),
-        },
-      })
-        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
-        .sort({ reward_completed_at: -1 });
-
-      const sep_candy = await Candy.find({
-        user_id: completedCandy_dto.user_id,
-        reward_completed_at: {
-          $lt: new Date(Date.UTC(today.getFullYear(), 9, 1, 0, 0, 0)),
-          $gte: new Date(Date.UTC(today.getFullYear(), 8, 1, 0, 0, 0)),
-        },
-      })
-        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
-        .sort({ reward_completed_at: -1 });
-
-      const oct_candy = await Candy.find({
-        user_id: completedCandy_dto.user_id,
-        reward_completed_at: {
-          $lt: new Date(Date.UTC(today.getFullYear(), 10, 1, 0, 0, 0)),
-          $gte: new Date(Date.UTC(today.getFullYear(), 9, 1, 0, 0, 0)),
-        },
-      })
-        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
-        .sort({ reward_completed_at: -1 });
-
-      const nov_candy = await Candy.find({
-        user_id: completedCandy_dto.user_id,
-        reward_completed_at: {
-          $lt: new Date(Date.UTC(today.getFullYear(), 11, 1, 0, 0, 0)),
-          $gte: new Date(Date.UTC(today.getFullYear(), 10, 1, 0, 0, 0)),
-        },
-      })
-        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
-        .sort({ reward_completed_at: -1 });
-
-      const dec_candy = await Candy.find({
-        user_id: completedCandy_dto.user_id,
-        reward_completed_at: {
-          $lt: new Date(Date.UTC(today.getFullYear(), 12, 1, 0, 0, 0)),
-          $gte: new Date(Date.UTC(today.getFullYear(), 11, 1, 0, 0, 0)),
-        },
-      })
-        .populate('category_id', { category_image_url: 1, _id: 0, name: 1 })
-        .sort({ reward_completed_at: -1 });
-
       let category_num = [];
 
       const candies = await {
