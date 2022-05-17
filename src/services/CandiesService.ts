@@ -327,9 +327,7 @@ export class CandiesService {
   }
 
   static async completedCandy(completedCandy_dto: completedCandyDto) {
-    try {
-      const today = new Date();
-      const user_nickname = await User.findById(completedCandy_dto.user_id).select({ nickname: 1, _id: 0 });
+    /*
       const january_candy = await Candy.find({
         user_id: completedCandy_dto.user_id,
         reward_completed_at: {
@@ -612,9 +610,62 @@ export class CandiesService {
         user_nickname: user_nickname['nickname'],
         monthly_candies: candies,
       };
+*/
+    try {
+      const candies = await Candy.find({
+        user_id: completedCandy_dto.user_id,
+        reward_completed_at: { $gt: new Date(Date.UTC(1111, 11, 1, 0, 0, 0)) },
+      });
 
-      return result;
+      const today = new Date();
+      const day = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0));
+
+      const candy_array = await {
+        result: candies.map((v) => {
+          let waiting_date = 0;
+          let month = 0;
+          let date = 0;
+          let d_day = 0;
+          if (v.reward_planned_at.getFullYear() == 1111) {
+          } else {
+            const planned_date = v.reward_planned_at;
+            month = planned_date.getMonth() + 1;
+            date = planned_date.getDate();
+            if (planned_date.getTime() - day.getTime() < 0) {
+              d_day = Math.floor((day.getTime() - planned_date.getTime()) / (1000 * 3600 * 24));
+              d_day *= -1;
+            } else {
+              d_day = Math.floor((planned_date.getTime() - day.getTime()) / (1000 * 3600 * 24));
+            }
+          }
+          let category_image_url = '';
+          let category_name = '';
+          if (v.category_id != null) {
+            category_image_url = v.category_id['category_image_url'];
+            category_name = v.category_id['name'];
+          }
+          return {
+            candy_id: v._id,
+            candy_image_url: v.candy_image_url,
+            candy_name: v.name,
+            category_image_url: category_image_url,
+            category_name: category_name,
+            waiting_date: waiting_date,
+            d_day: d_day,
+            month: month,
+            date: date,
+          };
+        }),
+      };
+
+      return {
+        count: candy_array['result'].length,
+        candy_array: candy_array['result'],
+      };
     } catch (err) {
+      if (err.kind === 'ObjectId') {
+        return { message: 'Candy not found' };
+      }
       return {
         message: 'Server Error',
       };
