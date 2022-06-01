@@ -9,6 +9,8 @@ import swaggerJsdoc from "swagger-jsdoc";
 import swaggerOptions from './modules/swagger';
 const passportConfig = require('./passport');
 
+const {mailSchedule} = require('./lib/sendMail');
+
 
 const cors = require('cors');
 const app = express();
@@ -64,6 +66,9 @@ app.use((err, req, res, next) => {
   res.send(err);
   console.log(err);
 });
+
+mailSchedule();
+
 app
   .listen(5000, () => {
     console.log(app.get('env'))
