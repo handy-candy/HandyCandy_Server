@@ -12,10 +12,14 @@ import {
 } from '../dto/candies.dto';
 import Candy from '../models/Candy';
 import Category from '../models/Category';
+import Mail from '../models/Mail';
+import {mailDto} from '../dto/mail.dto';
+const mailContent = require('./../lib/mailContent');
 import User from '../models/User';
 import fetch from 'node-fetch-npm';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import dayjs from 'dayjs';
 
 export class CandiesService {
   static async comingCandy(user_dto: userDto) {
@@ -212,6 +216,7 @@ export class CandiesService {
       let url = '';
       let ret;
 
+      // DB에 저장할 데이터
       const newCandy = new Candy({
         name: '',
         shopping_link: newCandy_dto.shopping_link,
@@ -227,10 +232,68 @@ export class CandiesService {
 
       const candy = await newCandy.save();
 
+      // 메일 보낼 때 사용할 정보
+      let candy_name = ""
+      let candy_image = ""
+
+      
+      // 크롤링
       if (newCandy_dto.shopping_link.length) {
         ret = await CandiesService.crawler(newCandy_dto.shopping_link);
+        candy_name = ret['title'];
+        
+        const  saveMailContent = async (candy_image) =>{
+          // 메일DB에 메일 내용 저장
+          
+          // 현재 날짜
+          let now = dayjs();
+          now = now.set("hour", 0);
+          now = now.set("minute", 0);
+          now = now.set("second", 0);
+          now = now.set("millisecond", 0);
+          let after18day = now.add(18, 'day')
+          let after2month = now.add(2, 'month')
+
+          // 메일에 넣을 정보들
+          const user_name = (await User.findById(newCandy_dto.user_id)).nickname;
+
+          const candy_link = newCandy_dto.shopping_link;
+          const handycandy_link = "https://www.handycandy.kr/"
+
+          // 18일 후 메일
+
+          let after18dayMail = await mailContent.saveAfter18day(after18day.get('month')+1, after18day.get('date'), user_name, candy_name, candy_image, candy_link, handycandy_link)
+
+          let newMail = new Mail({
+            user_id: newCandy_dto.user_id, 
+            candy_id:candy['_id'],
+            user_name,
+            title: after18dayMail.title, 
+            content: after18dayMail.content, 
+            send_date: after18day,
+            is_sent: false 
+          });
+          after18dayMail = await newMail.save();
+
+          // 2개월 후 메일
+          let after2monthMail = mailContent.saveAfter2month(after2month.get('month')+1, after2month.get('date'), user_name, candy_name, candy_image, candy_link, handycandy_link)
+          newMail = new Mail({
+            user_id: newCandy_dto.user_id, 
+            candy_id:candy['_id'],
+            user_name,
+            title: after2monthMail.title, 
+            content: after2monthMail.content, 
+            send_date: after2month,
+            is_sent: false 
+          });
+          after2monthMail = await newMail.save();
+        }
+
+        // 디폴트로 이미지 없이 저장하고, 추후 검사 시 이미지 있으면 업데이트
+        saveMailContent("");
+
         if (ret['image'].length) {
-          new Promise((resolve, reject) => {
+          new Promise( (resolve, reject) => {
             fetch(ret['image']).then((res) => {
               res.body.pipe(fs.createWriteStream('temp.jpg')).on('finish', (data) => {
                 const param = {
@@ -241,12 +304,25 @@ export class CandiesService {
                   ContentType: 'image/jpg',
                 };
 
+
+                
                 s3.upload(param, async (error, data) => {
                   if (error) {
                     return 'Server Error';
                   }
                   url = data['Location'];
                   candy['candy_image_url'] = url;
+                  candy_image = url
+                  // ~~ 기존 user_id, candy_id에 해당하는 메일들 삭제
+                  // user_id, candy_id에 해당하는 메일의 가져오기
+                  const mail_array = await Mail.find({"user_id": newCandy_dto.user_id, "candy_id": candy['_id']});
+                  // 해당하는 것들 삭제
+                  if (mail_array) {
+                    for (const mail of mail_array) {
+                      mail.remove();
+                    }
+                  }
+                  saveMailContent(candy_image);
                   candy['name'] = ret['title'];
                   candy['shopping_link_name'] = ret['siteName'];
                   candy['shopping_link_image'] = ret['icon'];
@@ -267,6 +343,7 @@ export class CandiesService {
         return '링크를 입력해주세요';
       }
     } catch (err) {
+      console.log(err)
       return { message: 'Server Error' };
     }
   }
@@ -288,6 +365,62 @@ export class CandiesService {
       candy['reward_planned_at'] = planned_date;
 
       await candy.save();
+
+      
+
+      // ~~ 기존 user_id, candy_id에 해당하는 메일들 삭제
+      // user_id, candy_id에 해당하는 메일의 가져오기
+      const mail_array = await Mail.find({"user_id": addDateCandy_dto.user_id, "candy_id": addDateCandy_dto.candy_id});
+      // 해당하는 것들 삭제
+      if (mail_array) {
+        for (const mail of mail_array) {
+          mail.remove();
+        }
+      }
+      
+      // ~~ 메일에 추가할 정보 모음
+      const user_id = addDateCandy_dto.user_id;
+      const user_name = (await User.findById(user_id)).nickname;
+      const candy_id = addDateCandy_dto.candy_id;
+      const candy_link = candy.shopping_link;
+      const candy_name = candy.name;
+      const candy_image = candy.candy_image_url;
+      const handycandy_link = "https://www.handycandy.kr/"
+
+      const Dday = dayjs(planned_date)
+      const before2day = Dday.subtract(2, 'day');
+      
+
+      // 설정한 날짜 2일 전
+      
+      let before2dayMail = mailContent.before2day(before2day.get('month')+1, before2day.get('date'), user_name, candy_name, candy_image, candy_link, handycandy_link)
+
+      let newMail = new Mail({
+        user_id: user_id, 
+        candy_id:candy_id,
+        user_name,
+        title: before2dayMail.title, 
+        content: before2dayMail.content, 
+        send_date: before2day,
+        is_sent: false 
+      });
+      before2dayMail = await newMail.save();
+
+      // 당일 메일
+      let DdayMail = mailContent.Dday(Dday.get('month')+1, Dday.get('date'), user_name, candy_name, candy_image, candy_link, handycandy_link)
+      newMail = new Mail({
+        user_id: user_id, 
+        candy_id:candy_id,
+        user_name,
+        title: DdayMail.title, 
+        content: DdayMail.content, 
+        send_date: Dday,
+        is_sent: false 
+      });
+      DdayMail = await newMail.save();
+
+
+
 
       const result = '보상 날짜가 등록되었습니다.';
       return result;
@@ -317,6 +450,43 @@ export class CandiesService {
 
       candy['reward_completed_at'] = new Date(Date.UTC(year, month, date, 0, 0, 0));
       await candy.save();
+
+      // ~~ 메일에 추가할 정보 모음
+      const user_id = candy_dto.user_id;
+      const user_name = (await User.findById(user_id)).nickname;
+      const candy_id = candy_dto.candy_id;
+      const candy_link = candy.shopping_link;
+      const candy_name = candy.name;
+      const candy_image = candy.candy_image_url;
+      const handycandy_link = "https://www.handycandy.kr/"
+
+      const after7day = dayjs().add(7, 'day');
+      
+      // ~~ 기존 user_id, candy_id에 해당하는 메일들 삭제
+      // user_id, candy_id에 해당하는 메일의 가져오기
+      const mail_array = await Mail.find({"user_id": user_id, "candy_id": candy_id});
+      // 해당하는 것들 삭제
+      if (mail_array) {
+        for (const mail of mail_array) {
+          mail.remove();
+        }
+      }
+
+      // 설정한 날짜 7일 후
+      
+      let rewardAfter7dayMail = mailContent.rewardAfter7day(after7day.get('month')+1, after7day.get('date'), user_name, candy_name, candy_image, candy_link, handycandy_link)
+
+      let newMail = new Mail({
+        user_id: user_id, 
+        candy_id:candy_id,
+        user_name,
+        title: rewardAfter7dayMail.title, 
+        content: rewardAfter7dayMail.content, 
+        send_date: after7day,
+        is_sent: false 
+      });
+      rewardAfter7dayMail = await newMail.save();
+
 
       return {
         message: '보상이 완료되었습니다',
