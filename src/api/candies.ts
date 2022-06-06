@@ -22,6 +22,7 @@ import {
   addCandyCategory,
   monthlyCompletedCandy,
   monthlyCategoryCompletedCandy,
+  yearlyCompletedCandy,
 } from '../controllers';
 import auth from '../middleware/auth';
 const router = Router();
@@ -137,5 +138,7 @@ router.put('/rewardCandy/:candy_id', auth, rewardCandy);
 router.get('/monthlyCompletedCandy/all', auth, monthlyCompletedCandy);
 
 router.get('/monthlyCompletedCandy/:category_id', auth, monthlyCategoryCompletedCandy);
+
+router.get('/yearlyCompletedCandy/:year', auth, yearlyCompletedCandy);
 
 module.exports = router;
