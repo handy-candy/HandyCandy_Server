@@ -9,6 +9,7 @@ import {
   completedCandyDto,
   modifyCompletedCandyDto,
   reviewDto,
+  yearlyCompletedCandyDto,
   addCandyCategoryDto,
   modifyCandyDto,
   moidfyImageDto,
@@ -170,6 +171,17 @@ export const monthlyCategoryCompletedCandy = async (req: Request, res: Response)
   };
 
   const result = await CandiesService.monthlyCategoryCompletedCandy(monthlyCompletedCandy_dto);
+
+  res.status(200).json({ result: result });
+};
+
+export const yearlyCompletedCandy = async (req: Request, res: Response) => {
+  const yearlyCompletedCandy_dto: yearlyCompletedCandyDto = {
+    user_id: req.body.user.id,
+    year: req.params.year,
+  };
+
+  const result = await CandiesService.yearlyCompletedCandy(yearlyCompletedCandy_dto);
 
   res.status(200).json({ result: result });
 };

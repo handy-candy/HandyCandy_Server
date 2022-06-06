@@ -67,6 +67,11 @@ export interface monthlyCompletedCandyDto {
   year: number;
 }
 
+export interface yearlyCompletedCandyDto {
+  user_id: mongoose.Types.ObjectId;
+  year: number;
+}
+
 export interface monthlyCategoryCompletedCandyDto {
   user_id: mongoose.Types.ObjectId;
   month: number;

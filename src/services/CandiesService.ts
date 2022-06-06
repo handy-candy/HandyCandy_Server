@@ -9,6 +9,7 @@ import {
   addCandyCategoryDto,
   monthlyCompletedCandyDto,
   monthlyCategoryCompletedCandyDto,
+  yearlyCompletedCandyDto,
 } from '../dto/candies.dto';
 import Candy from '../models/Candy';
 import Category from '../models/Category';
@@ -571,6 +572,38 @@ export class CandiesService {
     };
   }
 
+  static async yearlyCompletedCandy(yearlyCompletedCandy_dto: yearlyCompletedCandyDto) {
+    const yearlyCandyList = await Candy.find({
+      user_id: yearlyCompletedCandy_dto.user_id,
+      reward_completed_at: {
+        $lt: new Date(Date.UTC(yearlyCompletedCandy_dto.year + 1, 0, 1, 0, 0, 0)),
+        $gte: new Date(Date.UTC(yearlyCompletedCandy_dto.year, 0, 1, 0, 0, 0)),
+      },
+    })
+      .populate('category_id')
+      .sort({ reward_completed_at: 1 });
+
+    var monthlyCnt = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    var highestMonth = 0;
+
+    yearlyCandyList.map((v) => {
+      const month = v.reward_completed_at.getMonth();
+      monthlyCnt[month]++;
+    });
+
+    var sum = 0;
+    for (var i = 0; i < 12; i++) {
+      sum += monthlyCnt[i];
+      if (highestMonth < monthlyCnt[i]) {
+        highestMonth = i;
+      }
+    }
+    return {
+      count: sum,
+      montlyCandyCnt: monthlyCnt,
+      highestMonth: highestMonth + 1,
+    };
+  }
   static async monthlyCategoryCompletedCandy(monthlyCategoryCompletedCandy_dto: monthlyCategoryCompletedCandyDto) {
     const monthlyCandyList = await Candy.find({
       user_id: monthlyCategoryCompletedCandy_dto.user_id,
